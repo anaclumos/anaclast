@@ -16,7 +16,7 @@ enum SettingsWindow {
         let window = self.window ?? makeWindow(model: model)
         self.window = window
         window.makeKeyAndOrderFront(nil)
-        NSApp.activate()
+        NSApp.bringForward()
     }
 
     static func refresh(config: Config, choices: [ActionChoice]) {

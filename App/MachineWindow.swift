@@ -13,7 +13,7 @@ enum MachineWindow {
         self.window = window
         model.refresh()
         window.makeKeyAndOrderFront(nil)
-        NSApp.activate()
+        NSApp.bringForward()
     }
 
     private static func makeWindow() -> NSWindow {

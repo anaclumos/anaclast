@@ -27,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         let intents = self.intents
         AppDependencyManager.shared.add(dependency: intents)
+        NSApp.mainMenu = Self.editMenu()
         CapsRemap.reset()
         quitOnTermination()
         let store: ConfigStore
@@ -67,6 +68,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         if CapsRemap.isApplied { CapsRemap.reset() }
+    }
+
+    // An accessory app shows no menu bar, but text fields still reach Cut, Copy, Paste, Select All and Undo only through main menu key equivalents.
+    private static func editMenu() -> NSMenu {
+        let edit = NSMenu(title: "Edit")
+        edit.addItem(withTitle: "Undo", action: Selector(("undo:")), keyEquivalent: "z")
+        edit.addItem(withTitle: "Redo", action: Selector(("redo:")), keyEquivalent: "Z")
+        edit.addItem(.separator())
+        edit.addItem(withTitle: "Cut", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        edit.addItem(withTitle: "Copy", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        edit.addItem(withTitle: "Paste", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.addItem(withTitle: "Select All", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        let editItem = NSMenuItem()
+        editItem.submenu = edit
+        let menu = NSMenu()
+        menu.addItem(NSMenuItem())
+        menu.addItem(editItem)
+        return menu
     }
 
     private func quitOnTermination() {
@@ -231,10 +250,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 let alert = NSAlert()
                 alert.messageText = message
                 alert.informativeText = detail
-                NSApp.activate()
+                NSApp.bringForward()
                 alert.runModal()
                 if quitting { NSApp.terminate(nil) }
             }
         }
+    }
+}
+
+extension NSApplication {
+    // activate() is cooperative, and the app in front never yields to a launchd-started accessory app, so a window opened from the launcher or Siri would stay behind it.
+    func bringForward() {
+        activate(ignoringOtherApps: true)
     }
 }
