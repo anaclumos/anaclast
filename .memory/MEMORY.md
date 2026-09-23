@@ -17,3 +17,4 @@
 - [Accessory app activation](accessory-app-activation.md) — activate() is refused for the login agent app; windows need activateIgnoringOtherApps and fields need an Edit menu
 - [Panels drop layer animations](panel-drops-layer-animations.md) — re-add Core Animation on window visibility, and prefer it over TimelineView
 - [Testing now playing](testing-now-playing.md) — a scratch .app with remote command handlers and a silent track takes over Now Playing
+- [No Shortcuts app checks](no-shortcuts-app-checks.md) — the owner dropped verifying Siri actions through Shortcuts; use bundle metadata and the linkd log
