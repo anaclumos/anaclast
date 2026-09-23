@@ -12,7 +12,7 @@
 - [WWDR G3 intermediate missing](wwdr-g3-intermediate-missing.md) — a new Apple Development certificate stays invalid until G3 is in the keychain
 - [SwiftUI scale distorts AppKit text fields](swiftui-scale-distorts-appkit-text-field.md) — scale panel content through a layer transform, never `.scaleEffect`
 - [WeatherKit needs the App Services toggle](weatherkit-needs-app-services-toggle.md) — JWT error 2 until WeatherKit is checked on the App ID's App Services tab
-- ["Do it" covers the final click](do-it-covers-the-final-click.md) — a named go-ahead includes Save and its confirm dialog, and "don't ask" means pick the recommended default
+- ["Do it" covers the final click](do-it-covers-the-final-click.md) — a named go-ahead includes Save, its confirm dialog and pushing the commits the work produces, and "don't ask" means pick the recommended default
 - [Safari link is hidden](safari-link-is-hidden.md) — /Applications/Safari.app is a hidden cryptex link that skipsHiddenFiles drops
 - [Accessory app activation](accessory-app-activation.md) — activate() is refused for the login agent app; windows need activateIgnoringOtherApps and fields need an Edit menu
 - [Panels drop layer animations](panel-drops-layer-animations.md) — re-add Core Animation on window visibility, and prefer it over TimelineView
