@@ -5,7 +5,7 @@ metadata:
   type: reference
 ---
 
-Symbolic hot key 263 (`screenshots.ask-siri-active-window`, key 49, modifiers 1179648) steals ⌘⇧Space from 1Password Quick Access. Writing `enabled = false` into `com.apple.symbolichotkeys` `AppleSymbolicHotKeys` and running `activateSettings -u` is honored at login, but Siri re-enables 263 live afterwards (observed 2026-08-10: plist disabled while `CGSIsSymbolicHotKeyEnabled(263)` returned true).
+Symbolic hot key 263 (`screenshots.ask-siri-active-window`, key 49, modifiers 1179648) steals ⌘⇧Space from any app that binds it. Writing `enabled = false` into `com.apple.symbolichotkeys` `AppleSymbolicHotKeys` and running `activateSettings -u` is honored at login, but Siri re-enables 263 live afterwards (observed 2026-08-10: plist disabled while `CGSIsSymbolicHotKeyEnabled(263)` returned true).
 
 **Why:** a one-shot fix silently regresses.
 

@@ -8,7 +8,7 @@ metadata:
 Owner ruling, 2026-09-23. After asking why the agent needed Shortcuts, the owner said "drop it".
 
 - Anaclast does not depend on Shortcuts. The only reason to open it was to confirm that Siri lists Anaclast's App Intents.
-- Proof that stands without it: `Metadata.appintents` in the installed bundle lists every intent, and the linkd audit of `com.anaclumos.anaclast` logs no errors.
+- Proof that stands without it: `Metadata.appintents` in the installed bundle lists every intent, and the linkd audit of Anaclast's bundle ID logs no errors.
 - Driving the Shortcuts window risks the owner's automations. One attempt sent typed text into the sidebar and a Return into the Automation view. No data changed, but proving that took a replay of its database history.
 
 **Why:** the check cost more risk and time than it was worth to the owner.

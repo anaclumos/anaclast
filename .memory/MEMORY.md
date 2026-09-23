@@ -1,4 +1,4 @@
-- [Anaclast replaces sunghyun.nix](anaclast-replaces-sunghyun-nix.md) — why Anaclast exists, its name, and the owner's 2026-09-23 scope decisions
+- [Anaclast replaces the Nix setup](anaclast-replaces-nix-setup.md) — why Anaclast exists, its name, and the owner's 2026-09-23 scope decisions
 - [Keyboard never bricks](keyboard-never-bricks.md) — no HID seize; failure means no remap, never no keys
 - [Synthesized keys and system hotkeys](synthesized-keys-and-system-hotkeys.md) — posted chords miss the system hotkey matcher on macOS 26+
 - [Input source switching](input-source-switching.md) — out-of-process TISSelectInputSource does not switch the focused app
@@ -19,4 +19,4 @@
 - [Testing now playing](testing-now-playing.md) — a scratch .app with remote command handlers and a silent track takes over Now Playing
 - [No Shortcuts app checks](no-shortcuts-app-checks.md) — the owner dropped verifying Siri actions through Shortcuts; use bundle metadata and the linkd log
 - [Admin steps run through sudo](admin-steps-run-through-sudo.md) — osascript admin fails TCC on /etc/pam.d; no-terminal sudo needs SUDO_ASKPASS plus DISPLAY, and -A disables Touch ID
-- [Use the owner's sudo session](use-owner-sudo-session.md) — when the owner names a pre-authenticated tmux pane, run root steps there instead of new Touch ID prompts
+- [Use the owner's sudo session](use-owner-sudo-session.md) — when the owner names a pre-authenticated terminal session, run root steps there instead of new Touch ID prompts

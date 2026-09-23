@@ -5,7 +5,7 @@ metadata:
   type: reference
 ---
 
-Observed in sunghyun.nix (2026-08-08 and 2026-08-10, macOS 26/27): keystrokes synthesized from a CLI process never reach the WindowServer symbolic-hotkey matcher, so posting ⌘Space, ^Space or ⌃↑ does not open Spotlight, switch input source, or open Mission Control. Karabiner worked because its DriverKit virtual keyboard is real HID input.
+Observed in the old Nix setup (2026-08-08 and 2026-08-10, macOS 26/27): keystrokes synthesized from a CLI process never reach the WindowServer symbolic-hotkey matcher, so posting ⌘Space, ^Space or ⌃↑ does not open Spotlight, switch input source, or open Mission Control. Karabiner worked because its DriverKit virtual keyboard is real HID input.
 
 **Why:** any Anaclast action that relies on a system shortcut must call the underlying API instead of posting the chord.
 

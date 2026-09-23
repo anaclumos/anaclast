@@ -5,7 +5,7 @@ metadata:
   type: feedback
 ---
 
-Independent verifier correction in sunghyun.nix (2026-08-08): "removed" and "shipped" were reported when only code had landed. Also 2026-08-10: a relinked Hammerspoon config kept running the old code until the app restarted.
+Independent verifier correction in the old Nix setup (2026-08-08): "removed" and "shipped" were reported when only code had landed. Also 2026-08-10: a relinked Hammerspoon config kept running the old code until the app restarted.
 
 **Why:** landed code is not a running behavior.
 

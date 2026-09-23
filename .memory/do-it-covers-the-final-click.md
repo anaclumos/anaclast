@@ -7,9 +7,9 @@ metadata:
 
 Three owner corrections on 2026-09-23, same thread.
 
-- The owner said to use the browser to reach the WeatherKit App ID setting "and do it". The agent checked the box, then stopped before Save to show a before and after and ask again. The owner answered "approved, i fucking said. finish the task".
+- The owner said to use the browser to reach the WeatherKit App ID setting "and do it". The agent checked the box, then stopped before Save to show a before and after and ask again. The owner replied that it was already approved and to finish the task.
 - Asked which undeclared brews and casks to keep before an `apply` cleanup, the owner named a few and added "whatever needed. don't ask".
-- The owner answered "both approved" to a push and to retiring Karabiner. The agent pushed the named commits, did the retirement, then asked again to push the commits that retirement produced. The owner answered "why the fuck are you keep asking for approval? I fucking already approved it all?"
+- The owner answered "both approved" to a push and to retiring Karabiner. The agent pushed the named commits, did the retirement, then asked again to push the commits that retirement produced. The owner replied that everything was already approved.
 
 **Why:** a named instruction like "go there and do it" already is the specific yes for that one write, and a standing "finish all open items" goal with "don't ask" means the owner wants the work carried to the end, not a chain of confirmation prompts.
 

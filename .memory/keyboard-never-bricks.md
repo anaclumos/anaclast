@@ -5,7 +5,7 @@ metadata:
   type: feedback
 ---
 
-A remapper that exclusively seizes the keyboard and then loses its output path drops every key, including the on-screen Accessibility Keyboard (Kanata incident 2026-08-07, Karabiner Core-Service wedge 2026-08-08, both in sunghyun.nix).
+A remapper that exclusively seizes the keyboard and then loses its output path drops every key, including the on-screen Accessibility Keyboard (Kanata incident 2026-08-07, Karabiner Core-Service wedge 2026-08-08, both in the old Nix setup).
 
 **Why:** the owner cannot type a password to recover a bricked keyboard.
 
