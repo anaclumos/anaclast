@@ -6,15 +6,18 @@ import AnaclastCore
 @MainActor
 enum SettingsWindow {
     private static var window: NSWindow?
+    private static var tabs: NSTabViewController?
     private static var model: SettingsModel?
 
     static func show(store: ConfigStore, choices: [ActionChoice], pane: SettingsPane = .general) {
         let model = self.model ?? SettingsModel(store: store)
         model.refresh(config: store.config, choices: choices)
-        model.pane = pane
         self.model = model
-        let window = self.window ?? makeWindow(model: model)
+        let tabs = self.tabs ?? makeTabs(model: model)
+        self.tabs = tabs
+        let window = self.window ?? makeWindow(tabs: tabs)
         self.window = window
+        tabs.selectedTabViewItemIndex = SettingsPane.allCases.firstIndex(of: pane) ?? 0
         window.makeKeyAndOrderFront(nil)
         NSApp.bringForward()
     }
@@ -23,14 +26,49 @@ enum SettingsWindow {
         model?.refresh(config: config, choices: choices)
     }
 
-    private static func makeWindow(model: SettingsModel) -> NSWindow {
-        let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(model: model)))
-        window.title = "Anaclast Settings"
-        window.styleMask = [.titled, .closable, .miniaturizable, .resizable]
+    private static func makeTabs(model: SettingsModel) -> NSTabViewController {
+        let tabs = NSTabViewController()
+        tabs.tabStyle = .toolbar
+        for pane in SettingsPane.allCases {
+            let controller = NSHostingController(rootView: SettingsPaneView(pane: pane, model: model))
+            controller.sizingOptions = .preferredContentSize
+            controller.title = pane.title
+            let item = NSTabViewItem(viewController: controller)
+            item.label = pane.title
+            item.image = NSImage(systemSymbolName: pane.symbol, accessibilityDescription: nil)
+            tabs.addTabViewItem(item)
+        }
+        return tabs
+    }
+
+    private static func makeWindow(tabs: NSTabViewController) -> NSWindow {
+        let window = NSWindow(contentViewController: tabs)
+        window.styleMask = [.titled, .closable, .miniaturizable]
+        window.toolbarStyle = .preference
         window.isReleasedWhenClosed = false
-        window.setContentSize(CGSize(width: 640, height: 600))
         window.center()
         return window
+    }
+}
+
+private extension SettingsPane {
+    var title: String {
+        String(localized: Self.caseDisplayRepresentations[self]?.title ?? "\(rawValue)")
+    }
+
+    var symbol: String {
+        switch self {
+        case .general: "gearshape"
+        case .hyperKeys: "keyboard"
+        case .tiles: "rectangle.split.2x1"
+        }
+    }
+
+    var height: CGFloat {
+        switch self {
+        case .general: 524
+        case .hyperKeys, .tiles: 620
+        }
     }
 }
 
@@ -40,7 +78,6 @@ final class SettingsModel {
     private(set) var config: Config
     private(set) var choices: [ActionChoice] = []
     private(set) var error: String?
-    var pane = SettingsPane.general
     @ObservationIgnored private let store: ConfigStore
 
     init(store: ConfigStore) {
@@ -53,13 +90,16 @@ final class SettingsModel {
         self.choices = choices
     }
 
-    func change(_ edit: (inout Config) throws -> Void) {
+    @discardableResult
+    func change(_ edit: (inout Config) throws -> Void) -> Bool {
         do {
             try store.update(edit)
             config = store.config
             error = nil
+            return true
         } catch {
             self.error = String(describing: error)
+            return false
         }
     }
 
@@ -68,31 +108,27 @@ final class SettingsModel {
     }
 }
 
-struct SettingsView: View {
-    @Bindable var model: SettingsModel
+private struct SettingsPaneView: View {
+    let pane: SettingsPane
+    let model: SettingsModel
 
     var body: some View {
         VStack(spacing: 0) {
-            TabView(selection: $model.pane) {
-                Tab("General", systemImage: "gearshape", value: SettingsPane.general) {
-                    GeneralPane(model: model)
-                }
-                Tab("Hyper Keys", systemImage: "keyboard", value: SettingsPane.hyperKeys) {
-                    HyperKeysPane(model: model)
-                }
-                Tab("Tiles", systemImage: "rectangle.split.2x1", value: SettingsPane.tiles) {
-                    TilesPane(model: model)
-                }
+            switch pane {
+            case .general: GeneralPane(model: model)
+            case .hyperKeys: HyperKeysPane(model: model)
+            case .tiles: TilesPane(model: model)
             }
             if let error = model.error {
                 Label(error, systemImage: "exclamationmark.triangle.fill")
                     .foregroundStyle(.red)
                     .font(.callout)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(12)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
             }
         }
-        .frame(minWidth: 560, minHeight: 480)
+        .frame(width: 560, height: pane.height)
     }
 }
 
@@ -102,37 +138,53 @@ private struct GeneralPane: View {
     var body: some View {
         Form {
             Section("Caps Lock") {
-                ActionPicker(title: "Tap action", selection: model.binding(\.hyper.tap), choices: model.choices)
-                Stepper(value: model.binding(\.hyper.tapTimeoutMilliseconds), in: 50...2000, step: 10) {
-                    LabeledContent("Tap timeout", value: "\(model.config.hyper.tapTimeoutMilliseconds) ms")
-                }
+                ActionPicker(title: "Tap", selection: model.binding(\.hyper.tap), choices: model.choices)
+                StepperRow(title: "Tap timeout", value: model.binding(\.hyper.tapTimeoutMilliseconds), range: 50...2000, step: 10, unit: "ms")
             }
-            Section("Command taps") {
-                OptionalActionPicker(title: "Left ⌘ tap", selection: model.binding(\.modifierTaps.leftCommand), choices: model.choices)
-                OptionalActionPicker(title: "Right ⌘ tap", selection: model.binding(\.modifierTaps.rightCommand), choices: model.choices)
-                Stepper(value: model.binding(\.modifierTaps.timeoutMilliseconds), in: 50...2000, step: 10) {
-                    LabeledContent("Tap timeout", value: "\(model.config.modifierTaps.timeoutMilliseconds) ms")
-                }
+            Section("Command") {
+                OptionalActionPicker(title: "Tap left ⌘", selection: model.binding(\.modifierTaps.leftCommand), choices: model.choices)
+                OptionalActionPicker(title: "Tap right ⌘", selection: model.binding(\.modifierTaps.rightCommand), choices: model.choices)
+                StepperRow(title: "Tap timeout", value: model.binding(\.modifierTaps.timeoutMilliseconds), range: 50...2000, step: 10, unit: "ms")
             }
             Section("Clipboard") {
                 Toggle("Keep all history", isOn: Binding(get: { model.config.clipboard.limit == nil }, set: { keepAll in model.change { $0.clipboard.limit = keepAll ? nil : 500 } }))
                 if let limit = model.config.clipboard.limit {
-                    Stepper(value: Binding(get: { limit }, set: { value in model.change { $0.clipboard.limit = value } }), in: 50...5000, step: 50) {
-                        LabeledContent("History limit", value: "\(limit) items")
-                    }
+                    StepperRow(title: "Keep the last", value: Binding(get: { limit }, set: { value in model.change { $0.clipboard.limit = value } }), range: 50...5000, step: 50, unit: "items")
                 }
             }
             Section("Config file") {
-                LabeledContent("Location") {
-                    Text(ConfigStore.configURL.path(percentEncoded: false))
+                LabeledContent {
+                    Button("Show in Finder") {
+                        NSWorkspace.shared.activateFileViewerSelecting([ConfigStore.configURL.resolvingSymlinksInPath()])
+                    }
+                } label: {
+                    Text((ConfigStore.configURL.path(percentEncoded: false) as NSString).abbreviatingWithTildeInPath)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                         .textSelection(.enabled)
-                }
-                Button("Show in Finder") {
-                    NSWorkspace.shared.activateFileViewerSelecting([ConfigStore.configURL.resolvingSymlinksInPath()])
                 }
             }
         }
         .formStyle(.grouped)
+    }
+}
+
+private struct StepperRow: View {
+    let title: String
+    @Binding var value: Int
+    let range: ClosedRange<Int>
+    let step: Int
+    let unit: String
+
+    var body: some View {
+        LabeledContent(title) {
+            HStack(spacing: 8) {
+                Text("\(value) \(unit)")
+                    .monospacedDigit()
+                Stepper(title, value: $value, in: range, step: step)
+                    .labelsHidden()
+            }
+        }
     }
 }
 
@@ -143,31 +195,36 @@ private struct HyperKeysPane: View {
 
     var body: some View {
         Form {
-            Section("Bindings") {
-                ForEach(model.config.hyper.keys.keys.sorted(), id: \.self) { key in
-                    HStack {
-                        ActionPicker(title: "Hyper \(key.capitalized)", selection: binding(for: key), choices: model.choices)
-                        Button("Remove", systemImage: "minus.circle") {
-                            model.change { $0.hyper.keys[key] = nil }
+            Section("Hold Caps Lock and press") {
+                ForEach(model.config.hyper.keys.keys.sorted(by: KeyCap.order), id: \.self) { key in
+                    LabeledContent {
+                        HStack(spacing: 8) {
+                            ActionPicker(title: "Hyper \(KeyCap.label(key))", selection: binding(for: key), choices: model.choices)
+                                .labelsHidden()
+                            RemoveButton { model.change { $0.hyper.keys[key] = nil } }
                         }
-                        .labelStyle(.iconOnly)
-                        .buttonStyle(.borderless)
+                    } label: {
+                        KeyCap(name: key)
                     }
                 }
             }
-            Section("Add a binding") {
+            Section("Add a key") {
                 Picker("Key", selection: $newKey) {
                     Text("Choose a key").tag("")
-                    ForEach(Config.hyperKeyNames.filter { model.config.hyper.keys[$0] == nil }, id: \.self) { name in
-                        Text(name.capitalized).tag(name)
+                    ForEach(Config.hyperKeyNames.filter { model.config.hyper.keys[$0] == nil }.sorted(by: KeyCap.order), id: \.self) { name in
+                        Text(KeyCap.label(name)).tag(name)
                     }
                 }
                 ActionPicker(title: "Action", selection: $newAction, choices: model.choices)
-                Button("Add") {
-                    model.change { $0.hyper.keys[newKey] = newAction }
-                    newKey = ""
+                LabeledContent {
+                    Button("Add") {
+                        model.change { $0.hyper.keys[newKey] = newAction }
+                        newKey = ""
+                    }
+                    .disabled(newKey.isEmpty)
+                } label: {
+                    EmptyView()
                 }
-                .disabled(newKey.isEmpty)
             }
         }
         .formStyle(.grouped)
@@ -178,24 +235,74 @@ private struct HyperKeysPane: View {
     }
 }
 
+private struct KeyCap: View {
+    let name: String
+
+    var body: some View {
+        Text(Self.label(name))
+            .font(.system(size: 12, weight: .semibold, design: .rounded))
+            .padding(.horizontal, 7)
+            .frame(minWidth: 26, minHeight: 22)
+            .background(.quaternary, in: .rect(cornerRadius: 6))
+    }
+
+    private static let glyphs = [
+        "grave": "`", "minus": "-", "equal": "=", "leftbracket": "[", "rightbracket": "]", "backslash": "\\",
+        "semicolon": ";", "quote": "'", "comma": ",", "period": ".", "slash": "/",
+        "left": "←", "right": "→", "up": "↑", "down": "↓", "return": "↩", "enter": "⌤", "tab": "⇥",
+        "delete": "⌫", "forwarddelete": "⌦", "escape": "esc", "space": "Space",
+        "home": "↖", "end": "↘", "pageup": "⇞", "pagedown": "⇟",
+    ]
+
+    static func label(_ name: String) -> String {
+        glyphs[name] ?? (name.count == 1 ? name.uppercased() : name.capitalized)
+    }
+
+    static func order(_ lhs: String, _ rhs: String) -> Bool {
+        func rank(_ name: String) -> (Int, String) {
+            let cap = label(name)
+            guard cap.count == 1, let glyph = cap.first else { return (2, cap) }
+            return (glyph.isLetter || glyph.isNumber ? 0 : 1, cap)
+        }
+        return rank(lhs) < rank(rhs)
+    }
+}
+
 private struct TilesPane: View {
     let model: SettingsModel
     @State private var newName = ""
 
     var body: some View {
         Form {
-            Section("Tiles, as fractions of the screen") {
+            Section("Share of the screen") {
+                LabeledContent {
+                    HStack(spacing: 6) {
+                        ForEach(TileEdge.allCases, id: \.self) { edge in
+                            Text(edge.title)
+                                .frame(width: TileRow.fieldWidth, alignment: .trailing)
+                        }
+                        RemoveButton {}.hidden()
+                    }
+                } label: {
+                    EmptyView()
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
                 ForEach(model.config.tiles.sorted { $0.key < $1.key }, id: \.key) { name, frame in
                     TileRow(model: model, name: name, frame: frame)
                 }
             }
             Section("Add a tile") {
                 TextField("Name", text: $newName)
-                Button("Add") {
-                    model.change { $0.tiles[newName] = TileFrame(x: 0, y: 0, w: 1, h: 1) }
-                    newName = ""
+                LabeledContent {
+                    Button("Add") {
+                        model.change { $0.tiles[newName] = TileFrame(x: 0, y: 0, w: 1, h: 1) }
+                        newName = ""
+                    }
+                    .disabled(newName.isEmpty || model.config.tiles[newName] != nil)
+                } label: {
+                    EmptyView()
                 }
-                .disabled(newName.isEmpty || model.config.tiles[newName] != nil)
             }
         }
         .formStyle(.grouped)
@@ -203,47 +310,93 @@ private struct TilesPane: View {
 }
 
 private struct TileRow: View {
+    static let fieldWidth: CGFloat = 56
+
     let model: SettingsModel
     let name: String
     let frame: TileFrame
-    @State private var draft: TileFrame
 
-    init(model: SettingsModel, name: String, frame: TileFrame) {
-        self.model = model
-        self.name = name
-        self.frame = frame
-        _draft = State(initialValue: frame)
+    var body: some View {
+        LabeledContent {
+            HStack(spacing: 6) {
+                ForEach(TileEdge.allCases, id: \.self) { edge in
+                    PercentField(title: edge.title, value: edge.value(in: frame)) { value in
+                        model.change { $0.tiles[name] = edge.replacing(in: frame, with: value) }
+                    }
+                }
+                RemoveButton { model.change { $0.tiles[name] = nil } }
+            }
+        } label: {
+            HStack(spacing: 10) {
+                TilePreview(frame: frame)
+                Text(name.replacingOccurrences(of: "-", with: " ").capitalized)
+                    .lineLimit(1)
+            }
+        }
+    }
+
+}
+
+// A value-bound TextField writes its binding on every keystroke, so typing 80 would save 8% first. The draft commits once, on Return or when focus leaves.
+private struct PercentField: View {
+    let title: String
+    let value: Double
+    let commit: (Double) -> Bool
+    @State private var draft: Double
+    @FocusState private var focused: Bool
+
+    init(title: String, value: Double, commit: @escaping (Double) -> Bool) {
+        self.title = title
+        self.value = value
+        self.commit = commit
+        _draft = State(initialValue: value)
     }
 
     var body: some View {
-        HStack {
-            Text(name)
-                .frame(minWidth: 140, alignment: .leading)
-            ForEach(TileEdge.allCases, id: \.self) { edge in
-                TextField(edge.rawValue, value: Binding(get: { edge.value(in: draft) }, set: { draft = edge.replacing(in: draft, with: $0) }), format: .number.precision(.fractionLength(0...4)))
-                    .frame(width: 64)
-            }
-            Button("Save", systemImage: "checkmark.circle") { save() }
-                .labelStyle(.iconOnly)
-                .buttonStyle(.borderless)
-            Button("Remove", systemImage: "minus.circle") {
-                model.change { $0.tiles[name] = nil }
-            }
-            .labelStyle(.iconOnly)
-            .buttonStyle(.borderless)
-        }
-        .onSubmit { save() }
-        .onChange(of: frame) { draft = frame }
+        TextField(title, value: $draft, format: .percent.precision(.fractionLength(0...2)))
+            .labelsHidden()
+            .multilineTextAlignment(.trailing)
+            .frame(width: TileRow.fieldWidth)
+            .focused($focused)
+            .onSubmit(save)
+            .onChange(of: focused) { if !focused { save() } }
+            .onChange(of: value) { draft = value }
     }
 
     private func save() {
-        NSApp.keyWindow?.makeFirstResponder(nil)
-        model.change { $0.tiles[name] = draft }
+        guard draft != value, !commit(draft) else { return }
+        draft = value
     }
 }
 
-private enum TileEdge: String, CaseIterable {
+private struct TilePreview: View {
+    let frame: TileFrame
+
+    var body: some View {
+        let size = CGSize(width: 32, height: 20)
+        RoundedRectangle(cornerRadius: 3)
+            .strokeBorder(.secondary, lineWidth: 1)
+            .overlay(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(.tint)
+                    .frame(width: max(2, (size.width - 4) * frame.w), height: max(2, (size.height - 4) * frame.h))
+                    .offset(x: 2 + (size.width - 4) * frame.x, y: 2 + (size.height - 4) * frame.y)
+            }
+            .frame(width: size.width, height: size.height)
+    }
+}
+
+private enum TileEdge: CaseIterable {
     case x, y, w, h
+
+    var title: String {
+        switch self {
+        case .x: "Left"
+        case .y: "Top"
+        case .w: "Width"
+        case .h: "Height"
+        }
+    }
 
     func value(in frame: TileFrame) -> Double {
         switch self {
@@ -256,6 +409,17 @@ private enum TileEdge: String, CaseIterable {
 
     func replacing(in frame: TileFrame, with value: Double) -> TileFrame {
         TileFrame(x: self == .x ? value : frame.x, y: self == .y ? value : frame.y, w: self == .w ? value : frame.w, h: self == .h ? value : frame.h)
+    }
+}
+
+private struct RemoveButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button("Remove", systemImage: "minus.circle", action: action)
+            .labelStyle(.iconOnly)
+            .buttonStyle(.borderless)
+            .foregroundStyle(.secondary)
     }
 }
 
