@@ -17,6 +17,7 @@ Setup, layout and behavior live in [README.md](README.md). Lessons with dates li
 ## Rules
 
 - macOS 27 only. Use the 27 SDK directly and add no availability fallbacks ([memory](.memory/target-macos-golden-gate.md)).
+- Anaclast ships to other people. The owner's apps, keys, hosts and paths live in `config/`, never in `App/` or `Core/` ([memory](.memory/anaclast-is-hardware-config-is-software.md)).
 - The keyboard never bricks. No HID seize. Caps Lock is mapped only while the event tap runs and is reset on quit ([memory](.memory/keyboard-never-bricks.md)).
 - Never post a synthetic chord to reach a system hotkey. Call the API, or rewrite the real event inside the tap ([memory](.memory/synthesized-keys-and-system-hotkeys.md)).
 - Keyboard and config logic belongs in `Core/` with a Swift Testing case. `App/` holds only the platform glue.
