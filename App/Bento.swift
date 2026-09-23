@@ -19,7 +19,7 @@ struct BentoGrid: View {
                         MailTile(mail: status.mail)
                     }
                     .frame(height: row)
-                    NowPlayingTile(state: status.nowPlaying, toggle: status.togglePlayback)
+                    NowPlayingTile(state: status.media.state, toggle: status.media.togglePlayback)
                         .frame(height: row)
                 }
                 VStack(spacing: gap) {

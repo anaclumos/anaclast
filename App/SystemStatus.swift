@@ -59,26 +59,6 @@ struct WeatherStatus: Equatable {
     let legal: URL
 }
 
-struct NowPlaying: Equatable {
-    let title: String
-    let artist: String?
-    var playing: Bool
-    let artwork: Data?
-}
-
-enum NowPlayingState: Equatable {
-    case missing
-    case idle
-    case media(NowPlaying)
-}
-
-private struct MediaPayload: Decodable {
-    let title: String?
-    let artist: String?
-    let playing: Bool?
-    let artworkData: String?
-}
-
 enum WeatherState: Equatable {
     case waiting
     case noLocation
@@ -114,8 +94,7 @@ final class SystemStatus: NSObject {
     private(set) var network: NetworkStatus?
     private(set) var mail = MailState.closed
     private(set) var weather = WeatherState.waiting
-    private(set) var nowPlaying = NowPlayingState.idle
-    @ObservationIgnored private let mediaQueue = DispatchQueue(label: "com.anaclumos.anaclast.media")
+    let media = NowPlayingMonitor()
     @ObservationIgnored private var weatherTask: Task<Void, Never>?
     @ObservationIgnored private var weatherFetched: Date?
     @ObservationIgnored private var timer: Timer?
@@ -140,7 +119,6 @@ final class SystemStatus: NSObject {
         refreshCalendar()
         refreshMail()
         refreshWeather()
-        refreshNowPlaying()
         if EKEventStore.authorizationStatus(for: .event) != .notDetermined { requestLocation() }
         let timer = Timer(fire: .now + 0.5, interval: 2, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.sample() }
@@ -240,55 +218,6 @@ final class SystemStatus: NSObject {
         }
     }
 
-    nonisolated static let mediaControl = URL(filePath: "/opt/homebrew/bin/media-control")
-
-    func togglePlayback() {
-        mediaQueue.async { [weak self] in
-            guard Self.runMediaControl("toggle-play-pause") != nil else { return }
-            DispatchQueue.main.async {
-                MainActor.assumeIsolated {
-                    guard let self, case .media(var media) = self.nowPlaying else { return }
-                    media.playing.toggle()
-                    self.nowPlaying = .media(media)
-                }
-            }
-        }
-    }
-
-    private func refreshNowPlaying() {
-        guard FileManager.default.isExecutableFile(atPath: Self.mediaControl.path) else {
-            nowPlaying = .missing
-            return
-        }
-        mediaQueue.async { [weak self] in
-            let payload = Self.runMediaControl("get").flatMap { try? JSONDecoder().decode(MediaPayload?.self, from: $0) } ?? nil
-            let state: NowPlayingState = if let payload, let title = payload.title, !title.isEmpty {
-                .media(NowPlaying(title: title, artist: payload.artist, playing: payload.playing ?? false, artwork: payload.artworkData.flatMap { Data(base64Encoded: $0) }))
-            } else {
-                .idle
-            }
-            DispatchQueue.main.async { MainActor.assumeIsolated { self?.nowPlaying = state } }
-        }
-    }
-
-    private nonisolated static func runMediaControl(_ command: String) -> Data? {
-        let process = Process()
-        process.executableURL = mediaControl
-        process.arguments = [command]
-        let output = Pipe()
-        process.standardOutput = output
-        process.standardError = FileHandle.nullDevice
-        do {
-            try process.run()
-        } catch {
-            log.error("media-control \(command, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
-            return nil
-        }
-        DispatchQueue.global().asyncAfter(deadline: .now() + 3) { if process.isRunning { process.terminate() } }
-        let data = output.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        return process.terminationStatus == 0 ? data : nil
-    }
 
     private func refreshMail() {
         mailQueue.async { [weak self] in

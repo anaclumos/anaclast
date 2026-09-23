@@ -114,6 +114,7 @@ struct IslandFrame<Content: View>: View, Animatable {
 final class FloatingPanel: NSPanel {
     private let island = Island()
     private let size: CGSize
+    var onShow: () -> Void = {}
     var onHide: () -> Void = {}
 
     init<Content: View>(size: CGSize, @ViewBuilder content: () -> Content) {
@@ -156,6 +157,7 @@ final class FloatingPanel: NSPanel {
         let width = size.width + 2 * IslandShape.ear + 2 * IslandShape.overshoot
         let height = size.height + island.notch.height + IslandShape.overshoot
         setFrame(CGRect(x: screen.frame.midX - width / 2, y: screen.frame.maxY - height, width: width, height: height), display: false)
+        onShow()
         makeKeyAndOrderFront(nil)
         withAnimation(.spring(duration: 0.5, bounce: 0.35)) { island.expanded = true }
     }
@@ -178,7 +180,7 @@ final class FloatingPanel: NSPanel {
         isShown ? hide() : show()
     }
 
-    private static func notch(on screen: NSScreen) -> CGSize {
+    static func notch(on screen: NSScreen) -> CGSize {
         let menuBar = screen.frame.maxY - screen.visibleFrame.maxY
         guard screen.safeAreaInsets.top > 0, let left = screen.auxiliaryTopLeftArea, let right = screen.auxiliaryTopRightArea else {
             return CGSize(width: 185, height: max(menuBar, 24))

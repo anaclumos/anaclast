@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var launcherPanel: FloatingPanel?
     private var clipboardModel: ClipboardModel?
     private var clipboardPanel: FloatingPanel?
+    private var island: NowPlayingIsland?
     private var trustTimer: Timer?
     private var observers: [NSObjectProtocol] = []
     private var termination: DispatchSourceSignal?
@@ -57,6 +58,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         trackFrontmostApp()
         setUpLauncher()
         setUpClipboard(limit: config.clipboard.limit)
+        setUpNowPlaying()
         apps.onChange = { [weak self] in self?.refreshCatalog() }
         apps.start()
         hotkeys.start(disabling: config.disabledSymbolicHotkeys)
@@ -68,6 +70,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         if CapsRemap.isApplied { CapsRemap.reset() }
+        status.media.stop()
     }
 
     // An accessory app shows no menu bar, but text fields still reach Cut, Copy, Paste, Select All and Undo only through main menu key equivalents.
@@ -132,7 +135,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setUpLauncher() {
         let panel = FloatingPanel(size: CGSize(width: 720, height: 460)) { LauncherView(model: launcherModel, status: status) }
-        panel.onHide = { [status] in status.stop() }
+        panel.onShow = { [weak self] in self?.island?.suppressed = true }
+        panel.onHide = { [weak self, status] in
+            status.stop()
+            self?.island?.suppressed = false
+        }
         launcherModel.dismiss = { [weak panel] in panel?.hide() }
         launcherModel.perform = { [weak self] item in self?.perform(item) }
         launcherPanel = panel
@@ -144,12 +151,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let model = ClipboardModel(history: history)
         let panel = FloatingPanel(size: CGSize(width: 760, height: 480)) { ClipboardView(model: model) }
         model.dismiss = { [weak panel] in panel?.hide() }
+        panel.onShow = { [weak self] in self?.island?.suppressed = true }
+        panel.onHide = { [weak self] in self?.island?.suppressed = false }
         model.paste = { [weak panel] entry in
             history.copy(entry)
             panel?.hide { KeySender.post(KeyChord(key: .v, modifiers: .command)) }
         }
         clipboardModel = model
         clipboardPanel = panel
+    }
+
+    private func setUpNowPlaying() {
+        let island = NowPlayingIsland(media: status.media)
+        status.media.onChange = { [weak island] in island?.update() }
+        status.media.start()
+        self.island = island
     }
 
     private func setUpIntents() {
