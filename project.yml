@@ -25,6 +25,8 @@ targets:
           copyFiles:
             destination: wrapper
             subpath: Contents/Library/LaunchAgents
+      - path: Support/askpass
+        buildPhase: resources
     dependencies:
       - package: AnaclastCore
     entitlements:

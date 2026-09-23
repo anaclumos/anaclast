@@ -139,18 +139,15 @@ struct MachineApplier: Sendable {
             guard FileManager.default.createFile(atPath: script.path(percentEncoded: false), contents: Data(RootScript.render(steps).utf8), attributes: [.posixPermissions: 0o700]) else {
                 throw MachineError("could not write \(script.path(percentEncoded: false))")
             }
-            let outcome = try await MachineTools.run("/usr/bin/osascript", [
-                "-e", "on run argv",
-                "-e", "do shell script quoted form of (item 1 of argv) with administrator privileges without altering line endings",
-                "-e", "end run",
-                script.path(percentEncoded: false),
-            ], onLine: output)
+            guard let askpass = Bundle.main.path(forResource: "askpass", ofType: nil) else { throw MachineError("the app bundle has no askpass helper") }
+            // osascript's administrator privileges run the script under authtrampoline, which TCC treats as its own responsible process, so writes to /etc/pam.d fail SystemPolicySysAdminFiles even as root. sudo keeps the caller as the responsible app. Without a terminal, sudo falls back to SUDO_ASKPASS only while DISPLAY is set, and -A is no substitute because pam_tid skips Touch ID in askpass mode.
+            let outcome = try await MachineTools.run("/usr/bin/sudo", ["/bin/sh", script.path(percentEncoded: false)], environment: ["SUDO_ASKPASS": askpass, "DISPLAY": ProcessInfo.processInfo.environment["DISPLAY"] ?? ""], onLine: output)
             let statuses = RootScript.statuses(in: outcome.stdout)
             for (position, index) in indices.enumerated() {
                 switch statuses[position] {
                 case 0?: results[index] = .succeeded
                 case let status?: results[index] = .failed("exited with status \(status)")
-                case nil: results[index] = .failed(outcome.status == 0 ? "the administrator script reported no status" : "osascript exited with status \(outcome.status): \(outcome.stderr.trimmingCharacters(in: .whitespacesAndNewlines))")
+                case nil: results[index] = .failed(outcome.status == 0 ? "the administrator script reported no status" : "sudo exited with status \(outcome.status): \(outcome.stderr.trimmingCharacters(in: .whitespacesAndNewlines))")
                 }
             }
         } catch {

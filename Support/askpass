@@ -1,0 +1,4 @@
+#!/usr/bin/osascript
+on run argv
+	text returned of (display dialog "Anaclast needs your password to apply the administrator changes in machine.json." default answer "" with title "Anaclast" with icon caution with hidden answer)
+end run
