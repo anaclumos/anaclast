@@ -237,7 +237,7 @@ func loadError(_ json: String) -> String? {
     }
 
     @Test func repoMachineConfigLoads() throws {
-        let directory = repoConfigURL.deletingLastPathComponent()
+        let directory = repoConfigDirectory
         let config = try MachineConfig.load(from: directory.appending(path: "machine.json"), home: fixtureHome)
         #expect(!config.homebrew.brews.isEmpty)
         #expect(!config.homebrew.casks.isEmpty)

@@ -4,7 +4,8 @@ One Mac app for the keyboard layer, window tiling, launcher, clipboard history a
 
 - Replaces [sunghyun.nix](https://github.com/anaclumos/sunghyun.nix), Karabiner-Elements and Hammerspoon (owner 2026-09-23). Linux hosts are dropped.
 - macOS 27 only, built against the Xcode beta SDK.
-- [`config/anaclast.json`](config/anaclast.json) holds the keymap, tiles and shortcuts and reloads on save. [`config/machine.json`](config/machine.json) holds packages, preferences, dotfiles and hosts.
+- `~/.config/anaclast/config.json` holds the keymap, tiles and shortcuts and reloads on save. `Anaclast apply` links it to [`config/dotfiles/anaclast/config.json`](config/dotfiles/anaclast/config.json).
+- [`config/machine.json`](config/machine.json) holds packages, preferences, dotfiles and hosts.
 
 ## Setup
 
@@ -14,10 +15,12 @@ Fresh Mac, after installing Xcode from [Apple Beta](https://developer.apple.com/
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 /opt/homebrew/bin/brew install xcodegen
 git clone https://github.com/anaclumos/anaclast.git ~/Developer/anaclast
+make -C ~/Developer/anaclast build
+~/Developer/anaclast/build/Build/Products/Release/Anaclast.app/Contents/MacOS/Anaclast apply
 make -C ~/Developer/anaclast install
-/Applications/Anaclast.app/Contents/MacOS/Anaclast apply
 ```
 
+- `apply` runs before `install` because it links `~/.config/anaclast/config.json`, which the app needs at launch.
 - First launch asks for Accessibility, which the event tap, tiling and menu actions need.
 - Anaclast registers itself as a login agent that relaunches after a crash. When macOS wants approval, it opens Login Items in System Settings.
 - The Accessibility grant is tied to the code signature. Sign into Xcode with the Apple ID and create an Apple Development certificate, so builds keep the grant across rebuilds.
@@ -50,7 +53,7 @@ An event tap reads every key. Caps Lock reaches it as F18 through the HID `UserK
 
 "Anaclast Settings" in the launcher opens General, Hyper Keys and Tiles panes. Siri, Shortcuts and the command line change the same file.
 
-- Every change is validated, written to `anaclast.json` and reloaded. An invalid change leaves the file untouched and shows the error.
+- Every change is validated, written to `config.json` and reloaded. An invalid change leaves the file untouched and shows the error.
 - A key Anaclast does not know is an error at load, so no write can drop it.
 - Siri and Shortcuts get seven actions. They open settings, run anything the launcher runs, set a tap timeout or tap action, bind or unbind a Hyper key and set the clipboard limit.
 - Siri phrases include "Open Anaclast settings", "Anaclast Lock Screen", "Bind Hyper G in Anaclast" and "Set the Anaclast clipboard limit".
@@ -79,6 +82,6 @@ An event tap reads every key. Caps Lock reaches it as F18 through the HID `UserK
 |---|---|
 | `App/` | AppKit and SwiftUI glue for the event tap, panels, settings, App Intents, Accessibility, private API calls and machine apply |
 | `Core/` | SwiftPM package with the keyboard engine, config schema, tiling math, search and machine planner, plus tests |
-| `config/` | The two JSON configs and the linked dotfiles |
+| `config/` | `machine.json` and the linked dotfiles, including Anaclast's own config |
 | `Support/` | LaunchAgent plist bundled into the app |
 | `project.yml` | XcodeGen spec for `Anaclast.xcodeproj` |

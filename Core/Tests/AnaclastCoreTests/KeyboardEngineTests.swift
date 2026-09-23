@@ -307,6 +307,7 @@ import Testing
     }
 }
 
-let repoConfigURL = URL(fileURLWithPath: #filePath)
+let repoConfigDirectory = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-    .appending(path: "config/anaclast.json")
+    .appending(path: "config")
+let repoConfigURL = repoConfigDirectory.appending(path: "dotfiles/anaclast/config.json")

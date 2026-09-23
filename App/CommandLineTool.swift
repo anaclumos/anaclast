@@ -6,7 +6,7 @@ enum CommandLineTool {
 
     static func run(verb: String, arguments: [String]) -> Int32 {
         if verb == "settings" { return settings(arguments) }
-        let session = MachineSession(directory: MainActor.assumeIsolated { ConfigStore.directory }, home: MachineSession.currentHome)
+        let session = MachineSession(directory: MainActor.assumeIsolated { ConfigStore.machineDirectory }, home: MachineSession.currentHome)
         Task {
             exit(await main(verb: verb, arguments: arguments, session: session))
         }
@@ -67,7 +67,7 @@ enum CommandLineTool {
             case ("unset", 2):
                 try ConfigFile.update(at: url) { $0 = try $0.setting(arguments[1], to: nil) }
             default:
-                printError("usage: anaclast settings get [path] | set <path> <json> | unset <path>\nPaths are dotted keys of anaclast.json, such as hyper.tapTimeoutMilliseconds or hyper.keys.g.")
+                printError("usage: anaclast settings get [path] | set <path> <json> | unset <path>\nPaths are dotted keys of ~/.config/anaclast/config.json, such as hyper.tapTimeoutMilliseconds or hyper.keys.g.")
                 return 2
             }
             return 0

@@ -229,6 +229,10 @@
   },
   "links": [
     {
+      "source": "dotfiles/anaclast/config.json",
+      "target": "~/.config/anaclast/config.json"
+    },
+    {
       "source": "dotfiles/zsh/zshenv",
       "target": "~/.zshenv"
     },

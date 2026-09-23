@@ -6,7 +6,7 @@ import AnaclastCore
 @MainActor
 enum MachineWindow {
     private static var window: NSWindow?
-    private static let model = MachineModel(session: MachineSession(directory: ConfigStore.directory, home: MachineSession.currentHome))
+    private static let model = MachineModel(session: MachineSession(directory: ConfigStore.machineDirectory, home: MachineSession.currentHome))
 
     static func show() {
         let window = self.window ?? makeWindow()

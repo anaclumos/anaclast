@@ -6,14 +6,14 @@ let log = Logger(subsystem: "com.anaclumos.anaclast", category: "anaclast")
 
 @MainActor
 final class ConfigStore {
-    static let directory: URL = {
+    static let machineDirectory: URL = {
         guard let path = Bundle.main.object(forInfoDictionaryKey: "AnaclastConfigDirectory") as? String, !path.isEmpty else {
             fatalError("Info.plist is missing AnaclastConfigDirectory")
         }
         return URL(fileURLWithPath: path, isDirectory: true)
     }()
 
-    static var configURL: URL { directory.appending(path: "anaclast.json") }
+    static let configURL = URL.homeDirectory.appending(path: ".config/anaclast/config.json")
 
     private(set) var config: Config
     private var watcher: FileWatcher?
@@ -45,7 +45,8 @@ final class ConfigStore {
 
     func watch() {
         let config = Self.configURL.resolvingSymlinksInPath().path
-        watcher = FileWatcher(paths: [Self.directory.path], latency: 0.3) { [weak self] changed in
+        let directories = Set([Self.configURL.path, config].map { ($0 as NSString).deletingLastPathComponent })
+        watcher = FileWatcher(paths: Array(directories), latency: 0.3) { [weak self] changed in
             guard changed.contains(where: { URL(fileURLWithPath: $0).resolvingSymlinksInPath().path == config }) else { return }
             self?.reload(onlyIfChanged: true)
         }
