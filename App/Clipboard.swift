@@ -211,7 +211,6 @@ final class ClipboardModel {
 
     func activate() {
         guard let entry = selected else { return }
-        dismiss()
         paste(entry)
     }
 

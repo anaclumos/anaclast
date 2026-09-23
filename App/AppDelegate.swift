@@ -125,11 +125,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let model = ClipboardModel(history: history)
         let panel = FloatingPanel(size: CGSize(width: 760, height: 480)) { ClipboardView(model: model) }
         model.dismiss = { [weak panel] in panel?.hide() }
-        model.paste = { entry in
+        model.paste = { [weak panel] entry in
             history.copy(entry)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                KeySender.post(KeyChord(key: .v, modifiers: .command))
-            }
+            panel?.hide { KeySender.post(KeyChord(key: .v, modifiers: .command)) }
         }
         clipboardModel = model
         clipboardPanel = panel

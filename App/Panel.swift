@@ -160,14 +160,15 @@ final class FloatingPanel: NSPanel {
         withAnimation(.spring(duration: 0.5, bounce: 0.35)) { island.expanded = true }
     }
 
-    func hide() {
-        guard isVisible, island.expanded else { return }
+    func hide(then finished: @escaping () -> Void = {}) {
+        guard isVisible, island.expanded else { return finished() }
         onHide()
         withAnimation(.spring(duration: 0.35, bounce: 0.2)) {
             island.expanded = false
         } completion: { [weak self] in
             guard let self, !island.expanded else { return }
             orderOut(nil)
+            finished()
         }
     }
 
