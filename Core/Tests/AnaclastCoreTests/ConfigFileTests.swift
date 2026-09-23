@@ -13,6 +13,29 @@ import Testing
         return url
     }
 
+    @Test func starterConfigIsValid() throws {
+        try Config.starter.validate()
+        _ = try Keymap(config: Config.starter)
+    }
+
+    @Test func starterFillsOnlyAnEmptyPath() throws {
+        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let url = directory.appending(path: "anaclast/config.json")
+        #expect(try ConfigFile.createStarter(at: url))
+        #expect(try Config.load(from: url) == Config.starter)
+
+        let existing = try scratchCopy()
+        let before = try Data(contentsOf: existing)
+        #expect(try !ConfigFile.createStarter(at: existing))
+        #expect(try Data(contentsOf: existing) == before)
+
+        let dangling = directory.appending(path: "linked.json")
+        try FileManager.default.createSymbolicLink(at: dangling, withDestinationURL: directory.appending(path: "missing.json"))
+        #expect(try !ConfigFile.createStarter(at: dangling))
+        #expect(try FileManager.default.destinationOfSymbolicLink(atPath: dangling.path(percentEncoded: false)).hasSuffix("missing.json"))
+        #expect(!FileManager.default.fileExists(atPath: directory.appending(path: "missing.json").path(percentEncoded: false)))
+    }
+
     @Test func configSurvivesAWriteAndRead() throws {
         let decoded = try JSONDecoder().decode(Config.self, from: config.encoded())
         #expect(decoded == config)

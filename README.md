@@ -5,6 +5,7 @@ One Mac app for the keyboard layer, window tiling, launcher, clipboard history a
 - Replaces [sunghyun.nix](https://github.com/anaclumos/sunghyun.nix), Karabiner-Elements and Hammerspoon (owner 2026-09-23). Linux hosts are dropped.
 - macOS 27 only, built against the Xcode beta SDK.
 - `~/.config/anaclast/config.json` holds the keymap, tiles and shortcuts and reloads on save. `Anaclast apply` links it to [`config/dotfiles/anaclast/config.json`](config/dotfiles/anaclast/config.json).
+- When nothing is at that path, the first launch writes a starter config. Caps held is Hyper, Hyper Space opens the launcher, Hyper V opens clipboard history, Hyper arrows tile halves and Hyper Tab toggles Caps Lock. A dangling link is left alone and reported as a load error.
 - [`config/machine.json`](config/machine.json) holds packages, preferences, dotfiles and hosts.
 
 ## Setup

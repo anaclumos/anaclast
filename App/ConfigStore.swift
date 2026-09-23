@@ -21,6 +21,7 @@ final class ConfigStore {
     var onError: ((String) -> Void)?
 
     init() throws {
+        if try ConfigFile.createStarter(at: Self.configURL) { log.notice("wrote a starter config") }
         config = try Config.load(from: Self.configURL)
     }
 
