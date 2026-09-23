@@ -37,17 +37,20 @@ struct BentoGrid: View {
     }
 }
 
+// Every tile shares one skeleton, so headers, headlines and captions in a row sit on the same baselines.
 private struct Tile<Content: View>: View {
-    var title: String?
-    var symbol: String?
+    let title: String
+    let symbol: String
+    var tint: Color = .secondary
+    var link: URL?
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if let title, let symbol {
-                Label(title, systemImage: symbol)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
+            if let link {
+                Link(destination: link) { header }
+            } else {
+                header
             }
             content
             Spacer(minLength: 0)
@@ -55,6 +58,16 @@ private struct Tile<Content: View>: View {
         .padding(12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.white.opacity(0.06), in: .rect(cornerRadius: 18))
+    }
+
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 5) {
+            Image(systemName: symbol)
+            Text(title)
+        }
+        .font(.system(size: 11, weight: .semibold))
+        .foregroundStyle(tint)
+        .lineLimit(1)
     }
 }
 
@@ -66,7 +79,7 @@ private struct Headline: View {
             .font(.system(size: 30, weight: .semibold, design: .rounded))
             .monospacedDigit()
             .lineLimit(1)
-            .minimumScaleFactor(0.6)
+            .minimumScaleFactor(0.7)
     }
 }
 
@@ -77,20 +90,16 @@ private struct Caption: View {
         Text(text)
             .font(.system(size: 12))
             .foregroundStyle(.secondary)
-            .lineLimit(2)
+            .lineLimit(1)
     }
 }
 
 struct ClockTile: View {
     var body: some View {
-        Tile {
+        Tile(title: "Clock", symbol: "clock") {
             TimelineView(.everyMinute) { context in
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(context.date, format: .dateTime.hour().minute())
-                        .font(.system(size: 34, weight: .semibold, design: .rounded))
-                        .monospacedDigit()
-                    Caption(text: context.date.formatted(.dateTime.weekday(.wide).month().day()))
-                }
+                Headline(text: context.date.formatted(.dateTime.hour().minute()))
+                Caption(text: context.date.formatted(.dateTime.weekday(.wide).month().day()))
             }
         }
     }
@@ -134,28 +143,23 @@ struct CalendarTile: View {
     let state: CalendarState
 
     var body: some View {
-        Tile {
-            TimelineView(.everyMinute) { context in
-                VStack(alignment: .leading, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(context.date.formatted(.dateTime.weekday(.wide)).uppercased())
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.red)
-                        Text(context.date.formatted(.dateTime.day()))
-                            .font(.system(size: 30, weight: .medium, design: .rounded))
-                    }
-                    switch state {
-                    case .waiting:
-                        EmptyView()
-                    case .denied:
-                        Caption(text: "Calendar access is off")
-                    case .events(let items) where items.isEmpty:
-                        Caption(text: "No more events today")
-                    case .events(let items):
+        TimelineView(.everyMinute) { context in
+            Tile(title: context.date.formatted(.dateTime.weekday(.wide)).uppercased(), symbol: "calendar", tint: .red) {
+                Headline(text: context.date.formatted(.dateTime.day()))
+                switch state {
+                case .waiting:
+                    EmptyView()
+                case .denied:
+                    Caption(text: "Calendar access is off")
+                case .events(let items) where items.isEmpty:
+                    Caption(text: "No more events today")
+                case .events(let items):
+                    VStack(alignment: .leading, spacing: 8) {
                         ForEach(items.prefix(3)) { item in
                             EventRow(item: item)
                         }
                     }
+                    .padding(.top, 4)
                 }
             }
         }
@@ -189,33 +193,18 @@ struct WeatherTile: View {
     private static let degrees = Measurement<UnitTemperature>.FormatStyle(width: .narrow, usage: .weather, numberFormatStyle: .number.precision(.fractionLength(0)))
 
     var body: some View {
-        Tile {
-            switch weather {
-            case .waiting:
-                EmptyView()
-            case .noLocation:
-                Caption(text: "Location access is off")
-            case .unavailable:
-                Caption(text: "Weather unavailable")
-            case .ready(let now):
-                HStack(alignment: .top, spacing: 4) {
-                    HStack(spacing: 6) {
-                        Image(systemName: now.symbol)
-                            .symbolRenderingMode(.multicolor)
-                            .font(.system(size: 22))
-                        Headline(text: now.temperature.formatted(Self.degrees))
-                    }
-                    Spacer(minLength: 0)
-                    Link(destination: now.legal) {
-                        AsyncImage(url: now.mark) { image in
-                            image.resizable().scaledToFit()
-                        } placeholder: {
-                            Text("Weather").font(.system(size: 9))
-                        }
-                        .frame(height: 9)
-                    }
-                }
-                Caption(text: "\(now.condition), H \(now.high.formatted(Self.degrees)) L \(now.low.formatted(Self.degrees))")
+        switch weather {
+        case .waiting:
+            Tile(title: "Weather", symbol: "cloud.sun") { EmptyView() }
+        case .noLocation:
+            Tile(title: "Weather", symbol: "cloud.sun") { Caption(text: "Location access is off") }
+        case .unavailable:
+            Tile(title: "Weather", symbol: "cloud.sun") { Caption(text: "Weather unavailable") }
+        case .ready(let now):
+            Tile(title: "Weather", symbol: "apple.logo", link: now.legal) {
+                Headline(text: now.temperature.formatted(Self.degrees))
+                Caption(text: now.condition)
+                Caption(text: "H \(now.high.formatted(Self.degrees))  L \(now.low.formatted(Self.degrees))")
             }
         }
     }
@@ -226,20 +215,16 @@ struct NowPlayingTile: View {
     let toggle: () -> Void
 
     var body: some View {
-        switch state {
-        case .missing:
-            Tile(title: "Now Playing", symbol: "music.note") {
+        Tile(title: "Now Playing", symbol: "music.note") {
+            switch state {
+            case .missing:
                 Caption(text: "media-control isn't installed")
-            }
-        case .idle:
-            Tile(title: "Now Playing", symbol: "music.note") {
+            case .idle:
                 Caption(text: "Nothing playing")
-            }
-        case .media(let media):
-            Tile {
+            case .media(let media):
                 HStack(spacing: 12) {
                     Artwork(data: media.artwork)
-                        .frame(width: 64, height: 64)
+                        .frame(width: 56, height: 56)
                         .clipShape(.rect(cornerRadius: 10))
                     VStack(alignment: .leading, spacing: 2) {
                         Text(media.title)
@@ -259,7 +244,7 @@ struct NowPlayingTile: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .frame(maxHeight: .infinity)
+                .padding(.top, 4)
             }
         }
     }
@@ -306,15 +291,9 @@ struct NetworkTile: View {
     let network: NetworkStatus?
 
     var body: some View {
-        Tile(title: "Network", symbol: "network") {
+        Tile(title: "Network", symbol: network.map { symbol($0.kind) } ?? "network") {
             if let network {
-                HStack(spacing: 8) {
-                    Image(systemName: symbol(network.kind), variableValue: strength(network.rssi))
-                        .font(.system(size: 22, weight: .medium))
-                    Text(title(network))
-                        .font(.system(size: 15, weight: .semibold))
-                        .lineLimit(1)
-                }
+                Headline(text: title(network))
                 Caption(text: detail(network))
             }
         }
@@ -326,15 +305,6 @@ struct NetworkTile: View {
         case .ethernet: "cable.connector"
         case .other: "network"
         case .offline: "wifi.slash"
-        }
-    }
-
-    private func strength(_ rssi: Int?) -> Double? {
-        guard let rssi else { return nil }
-        return switch rssi {
-        case (-60)...: 1
-        case -70 ..< -60: 0.66
-        default: 0.33
         }
     }
 
@@ -374,6 +344,7 @@ struct LoadTile: View {
                     fraction: memory.map { Double($0.used) / Double($0.total) } ?? 0
                 )
             }
+            .padding(.top, 4)
         }
     }
 }

@@ -55,7 +55,6 @@ struct WeatherStatus: Equatable {
     let low: Measurement<UnitTemperature>
     let symbol: String
     let condition: String
-    let mark: URL
     let legal: URL
 }
 
@@ -209,7 +208,6 @@ final class SystemStatus: NSObject {
                 low: today.lowTemperature,
                 symbol: current.symbolName,
                 condition: current.condition.description,
-                mark: attribution.combinedMarkDarkURL,
                 legal: attribution.legalPageURL
             ))
         } catch {
