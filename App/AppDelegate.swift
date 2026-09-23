@@ -145,7 +145,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         launcherPanel = panel
     }
 
-    private func setUpClipboard(limit: Int) {
+    private func setUpClipboard(limit: Int?) {
         let history = ClipboardHistory(limit: limit)
         history.start()
         let model = ClipboardModel(history: history)

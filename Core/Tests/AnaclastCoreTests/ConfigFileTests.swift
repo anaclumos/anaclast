@@ -120,7 +120,22 @@ import Testing
     }
 
     @Test func valueReadsNestedSettings() throws {
-        let data = try config.value(at: "clipboard.limit")
+        let data = try config.setting("clipboard.limit", to: Data("500".utf8)).value(at: "clipboard.limit")
         #expect(String(decoding: data, as: UTF8.self) == "500")
+    }
+
+    @Test func clipboardLimitLeftOutKeepsAllHistory() throws {
+        let unlimited = try config.setting("clipboard.limit", to: nil)
+        #expect(unlimited.clipboard.limit == nil)
+        try unlimited.validate()
+        #expect(String(decoding: try unlimited.value(at: "clipboard.limit"), as: UTF8.self) == "null")
+        let url = try scratchCopy()
+        try ConfigFile.write(unlimited, to: url)
+        #expect(try Config.load(from: url).clipboard.limit == nil)
+        #expect(try String(contentsOf: url, encoding: .utf8).contains(#""limit" : null"#))
+        #expect(try unlimited.setting("clipboard.limit", to: Data("200".utf8)).clipboard.limit == 200)
+        var zero = config
+        zero.clipboard.limit = 0
+        #expect(throws: ConfigError.self) { try zero.validate() }
     }
 }

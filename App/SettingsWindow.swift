@@ -115,8 +115,11 @@ private struct GeneralPane: View {
                 }
             }
             Section("Clipboard") {
-                Stepper(value: model.binding(\.clipboard.limit), in: 50...5000, step: 50) {
-                    LabeledContent("History limit", value: "\(model.config.clipboard.limit) items")
+                Toggle("Keep all history", isOn: Binding(get: { model.config.clipboard.limit == nil }, set: { keepAll in model.change { $0.clipboard.limit = keepAll ? nil : 500 } }))
+                if let limit = model.config.clipboard.limit {
+                    Stepper(value: Binding(get: { limit }, set: { value in model.change { $0.clipboard.limit = value } }), in: 50...5000, step: 50) {
+                        LabeledContent("History limit", value: "\(limit) items")
+                    }
                 }
             }
             Section("Config file") {

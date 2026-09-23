@@ -1,6 +1,6 @@
 {
   "clipboard" : {
-    "limit" : 500
+    "limit" : null
   },
   "disabledSymbolicHotkeys" : [
     263,

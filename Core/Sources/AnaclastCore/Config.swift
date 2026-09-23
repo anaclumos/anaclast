@@ -121,7 +121,13 @@ public struct Config: Codable, Hashable, Sendable {
     }
 
     public struct Clipboard: Codable, Hashable, Sendable {
-        public var limit: Int
+        public var limit: Int?
+
+        // Writes null instead of dropping the key, so a config that keeps all history still names the setting.
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(limit, forKey: .limit)
+        }
     }
 
     public var tiles: [String: TileFrame]
@@ -156,7 +162,7 @@ public struct Config: Codable, Hashable, Sendable {
         guard hyper.tapTimeoutMilliseconds > 0, modifierTaps.timeoutMilliseconds > 0 else {
             throw .invalid("tap timeouts must be positive")
         }
-        guard clipboard.limit > 0 else { throw .invalid("clipboard.limit must be positive") }
+        if let limit = clipboard.limit, limit <= 0 { throw .invalid("clipboard.limit must be positive, or left out to keep all history") }
         var bound = Set<KeyCode>()
         for name in hyper.keys.keys.sorted() {
             guard let key = KeyCode(name: name) else { throw .invalid("hyper.keys has unknown key \"\(name)\"") }

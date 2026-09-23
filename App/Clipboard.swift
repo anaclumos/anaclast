@@ -40,7 +40,7 @@ struct ClipboardEntry: Codable, Identifiable, Hashable, Sendable {
 @Observable
 final class ClipboardHistory {
     private(set) var entries: [ClipboardEntry] = []
-    @ObservationIgnored var limit: Int
+    @ObservationIgnored var limit: Int?
     @ObservationIgnored private var lastChangeCount = NSPasteboard.general.changeCount
     @ObservationIgnored private var timer: Timer?
 
@@ -61,7 +61,7 @@ final class ClipboardHistory {
 
     static var indexURL: URL { directory.appending(path: "history.json") }
 
-    init(limit: Int) {
+    init(limit: Int?) {
         self.limit = limit
         load()
     }
@@ -106,7 +106,7 @@ final class ClipboardHistory {
     private func insert(_ entry: ClipboardEntry) {
         entries.removeAll { $0.content == entry.content }
         entries.insert(entry, at: 0)
-        if entries.count > limit {
+        if let limit, entries.count > limit {
             removeImages(of: Array(entries[limit...]))
             entries = Array(entries.prefix(limit))
         }

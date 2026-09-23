@@ -60,6 +60,7 @@ An event tap reads every key. Caps Lock reaches it as F18 through the HID `UserK
 - Settings panes answer the system open intent and the launcher answers the system in-app search intent.
 - Other agents use `Anaclast settings`. `get [path]` prints the config or one dotted path such as `hyper.keys.g`. `set <path> <json>` writes a value and `unset <path>` removes one.
 - The command line exits 1 when a change is rejected and 2 on bad usage. The running app reloads every write.
+- Without `clipboard.limit`, clipboard history keeps every item. "Keep all history" in General or `Anaclast settings unset clipboard.limit` turns that on.
 
 ## Machine
 
