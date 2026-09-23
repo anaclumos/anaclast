@@ -1,0 +1,11 @@
+{
+  "name": "sunghyun-zsh-bin",
+  "private": true,
+  "dependencies": {
+    "@date-fns/utc": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "es-toolkit": "^1.52.0",
+    "ky": "^2.1.0",
+    "zod": "^4.5.4"
+  }
+}

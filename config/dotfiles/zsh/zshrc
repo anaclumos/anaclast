@@ -1,0 +1,66 @@
+typeset -U path cdpath fpath manpath
+
+HELPDIR="/usr/share/zsh/$ZSH_VERSION/help"
+
+source "$ZSH_CONFIG_HOME/lib/brew.zsh"
+source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+ZSH_AUTOSUGGEST_STRATEGY=(history)
+
+plugins=(git)
+
+ZSH_THEME=norm
+zstyle ':omz:update' mode disabled
+source "$ZSH/oh-my-zsh.sh"
+
+HISTSIZE="10000"
+SAVEHIST="10000"
+
+HISTFILE="$HOME/.zsh_history"
+
+setopt HIST_FCNTL_LOCK HIST_IGNORE_DUPS HIST_IGNORE_SPACE SHARE_HISTORY \
+  NO_APPEND_HISTORY NO_EXTENDED_HISTORY NO_HIST_EXPIRE_DUPS_FIRST \
+  NO_HIST_FIND_NO_DUPS NO_HIST_IGNORE_ALL_DUPS NO_HIST_SAVE_NO_DUPS
+
+PROMPT="${PROMPT/\%m/%n@%m}"
+
+unsetopt RM_STAR_SILENT
+setopt RM_STAR_WAIT
+
+cc() {
+  claude --dangerously-skip-permissions "$@"
+}
+
+chat() {
+  codex --yolo "$@"
+}
+
+ag() {
+  cursor-agent --yolo "$@"
+}
+
+source "$ZSH_CONFIG_HOME/rc/functions.zsh"
+source "$ZSH_CONFIG_HOME/rc/integrations.zsh"
+
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$HOME/.opencode/bin:$BUN_INSTALL/bin:$PATH"
+
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+  source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
+fi
+
+alias -- c=cursor
+alias -- c.='cursor .'
+alias -- ccusage='bun x --bun ccusage'
+alias -- rm='rm -i'
+alias -- s='source ~/.zshrc'
+alias -- sentry-cli='echo '\''Use `sentry --help`'\'''
+alias -- ssh-control-tower='env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u AWS_SESSION_TOKEN -u AWS_CREDENTIAL_EXPIRATION AWS_CONFIG_FILE=$HOME/Developer/TwelveLabs/.cursor/aws/config AWS_PROFILE=dev AWS_REGION=us-west-2 AWS_DEFAULT_REGION=us-west-2 KUBECONFIG=$HOME/Developer/TwelveLabs/.cursor/kube/config kubectl -n jorengo-sandbox-nick exec -it deploy/control-tower -- bash'
+alias -- tw='ssh -t sc@twelvepi '\''exec "$SHELL" -lic "exec tmux new -c $HOME/Developer/TwelveLabs"'\'''
+alias -- uncommit='git reset --soft HEAD~1'
+alias -- x=exit
+alias -- xx=tokenmaxxing
+alias -- z='cursor "$HOME/Developer/anaclast"'
+source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main)

@@ -1,0 +1,64 @@
+name: Anaclast
+options:
+  bundleIdPrefix: com.anaclumos
+  deploymentTarget:
+    macOS: "27.0"
+  createIntermediateGroups: true
+packages:
+  AnaclastCore:
+    path: Core
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "27.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Anaclast:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+      - path: Support/com.anaclumos.anaclast.plist
+        buildPhase:
+          copyFiles:
+            destination: wrapper
+            subpath: Contents/Library/LaunchAgents
+    dependencies:
+      - package: AnaclastCore
+    entitlements:
+      path: App/Anaclast.entitlements
+      properties:
+        com.apple.developer.weatherkit: true
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Anaclast
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.productivity
+        AnaclastConfigDirectory: $(PROJECT_DIR)/config
+        NSCalendarsFullAccessUsageDescription: The launcher shows today's remaining events.
+        NSAppleEventsUsageDescription: The launcher shows the unread count of your Mail inbox.
+        NSLocationUsageDescription: The launcher shows local weather and the name of your Wi-Fi network.
+    settings:
+      base:
+        PRODUCT_NAME: Anaclast
+        PRODUCT_BUNDLE_IDENTIFIER: com.anaclumos.anaclast
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: Apple Development
+        DEVELOPMENT_TEAM: QKPXP9788L
+        ENABLE_HARDENED_RUNTIME: NO
+        ENABLE_APP_SANDBOX: NO
+        GENERATE_INFOPLIST_FILE: NO
+schemes:
+  Anaclast:
+    build:
+      targets:
+        Anaclast: all
+    run:
+      config: Debug
+    archive:
+      config: Release

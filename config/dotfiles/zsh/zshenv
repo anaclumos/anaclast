@@ -1,0 +1,47 @@
+export CORRECTIONGUY_FAST_MODE="true"
+export CORRECTIONGUY_MODEL="gpt-5.3-codex-spark"
+export CORRECTIONGUY_MODEL_REASONING_EFFORT="xhigh"
+export CORRECTIONGUY_SERVICE_TIER="priority"
+export CORRECTIONGUY_YOLO="false"
+export EDITOR="nano"
+export PAGER="less -R"
+
+export ZSH_CONFIG_HOME="$HOME/.config/zsh"
+
+if [[ -r "$ZSH_CONFIG_HOME/host.zsh" ]]; then
+  . "$ZSH_CONFIG_HOME/host.zsh"
+fi
+
+skip_global_compinit=1
+export HOMEBREW_NO_ENV_HINTS=1
+export HOMEBREW_NO_ASK=1
+export PIP_REQUIRE_VIRTUALENV=true
+export OLLAMA_ORIGINS="*"
+export CLAUDE_CODE_TMUX_TRUECOLOR=1
+
+if [[ -r "$HOME/.ssh/.secrets.env" ]]; then
+  set -a
+  . "$HOME/.ssh/.secrets.env"
+  set +a
+fi
+
+if [[ -r "$HOME/.cargo/env" ]]; then
+  . "$HOME/.cargo/env"
+fi
+
+typeset -gU path PATH
+path=(
+  "$HOME/.opencode/bin"
+  "$HOME/.config/tokenmaxxing/bin"
+  "$HOME/.local/bin"
+  "/opt/homebrew/opt/node@24/bin"
+  "/opt/homebrew/opt/curl/bin"
+  "$HOME/.local/share/google-cloud-sdk/bin"
+  "/opt/homebrew/bin"
+  "/opt/homebrew/sbin"
+  $path
+)
+export PATH
+
+ZSH="$HOME/.oh-my-zsh"
+ZSH_CACHE_DIR="$HOME/.cache/oh-my-zsh"

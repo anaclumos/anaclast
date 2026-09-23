@@ -1,0 +1,263 @@
+{
+  "clipboard" : {
+    "limit" : 500
+  },
+  "disabledSymbolicHotkeys" : [
+    263,
+    64
+  ],
+  "hyper" : {
+    "keys" : {
+      "1" : {
+        "tile" : "first-fourth"
+      },
+      "2" : {
+        "tile" : "second-fourth"
+      },
+      "3" : {
+        "tile" : "third-fourth"
+      },
+      "4" : {
+        "tile" : "last-fourth"
+      },
+      "5" : {
+        "command" : "toggleCapsLock"
+      },
+      "a" : {
+        "inputSource" : "com.apple.keylayout.US"
+      },
+      "b" : {
+        "inputSource" : "com.apple.inputmethod.Korean.2SetKorean"
+      },
+      "c" : {
+        "tile" : "center"
+      },
+      "d" : {
+        "command" : "showDesktop"
+      },
+      "down" : {
+        "tile" : "bottom"
+      },
+      "e" : {
+        "command" : "missionControl"
+      },
+      "f" : {
+        "command" : "missionControl"
+      },
+      "grave" : {
+        "command" : "toggleDarkMode"
+      },
+      "h" : {
+        "open" : "com.apple.mail"
+      },
+      "i" : {
+        "open" : "com.colliderli.iina"
+      },
+      "j" : {
+        "command" : "openDefaultBrowser"
+      },
+      "k" : {
+        "open" : "com.apple.Music"
+      },
+      "l" : {
+        "open" : "com.apple.iCal"
+      },
+      "left" : {
+        "tile" : "left"
+      },
+      "m" : {
+        "open" : "com.kakao.KakaoTalkMac"
+      },
+      "n" : {
+        "open" : "com.tinyspeck.slackmacgap"
+      },
+      "o" : {
+        "open" : "md.obsidian"
+      },
+      "p" : {
+        "open" : "com.apple.Preview"
+      },
+      "quote" : {
+        "command" : "cursorIDE"
+      },
+      "r" : {
+        "open" : "com.linear"
+      },
+      "return" : {
+        "tile" : "fullscreen"
+      },
+      "right" : {
+        "tile" : "right"
+      },
+      "semicolon" : {
+        "command" : "cursorAgents"
+      },
+      "space" : {
+        "command" : "launcher"
+      },
+      "up" : {
+        "tile" : "top"
+      },
+      "v" : {
+        "tile" : "top-left"
+      },
+      "w" : {
+        "tile" : "last-three-fourths"
+      },
+      "z" : {
+        "open" : "us.zoom.xos"
+      }
+    },
+    "tap" : {
+      "tile" : "maximize"
+    },
+    "tapTimeoutMilliseconds" : 200
+  },
+  "modifierTaps" : {
+    "leftCommand" : {
+      "inputSource" : "com.apple.keylayout.US"
+    },
+    "rightCommand" : {
+      "inputSource" : "com.apple.inputmethod.Korean.2SetKorean"
+    },
+    "timeoutMilliseconds" : 500
+  },
+  "remaps" : [
+    {
+      "from" : "spotlight",
+      "to" : "fn+f4"
+    },
+    {
+      "from" : "fn+f4",
+      "to" : "fn+spotlight"
+    },
+    {
+      "from" : "dictation",
+      "to" : "ctrl+m"
+    },
+    {
+      "from" : "fn+f5",
+      "to" : "fn+dictation"
+    }
+  ],
+  "shortcuts" : [
+    {
+      "action" : {
+        "command" : "launcher"
+      },
+      "chord" : "cmd+space"
+    },
+    {
+      "action" : {
+        "command" : "lockScreen"
+      },
+      "chord" : "cmd+l"
+    },
+    {
+      "action" : {
+        "command" : "clipboardHistory"
+      },
+      "chord" : "cmd+shift+v"
+    },
+    {
+      "action" : {
+        "menu" : [
+          "Message",
+          "Archive"
+        ]
+      },
+      "app" : "com.apple.mail",
+      "chord" : "cmd+e"
+    },
+    {
+      "action" : {
+        "menu" : [
+          "Mailbox",
+          "Get All New Mail"
+        ]
+      },
+      "app" : "com.apple.mail",
+      "chord" : "cmd+r"
+    }
+  ],
+  "tiles" : {
+    "bottom" : {
+      "h" : 0.5,
+      "w" : 1,
+      "x" : 0,
+      "y" : 0.5
+    },
+    "center" : {
+      "h" : 0.75,
+      "w" : 0.75,
+      "x" : 0.125,
+      "y" : 0.125
+    },
+    "first-fourth" : {
+      "h" : 1,
+      "w" : 0.25,
+      "x" : 0,
+      "y" : 0
+    },
+    "last-fourth" : {
+      "h" : 1,
+      "w" : 0.25,
+      "x" : 0.75,
+      "y" : 0
+    },
+    "last-three-fourths" : {
+      "h" : 1,
+      "w" : 0.75,
+      "x" : 0.25,
+      "y" : 0
+    },
+    "left" : {
+      "h" : 1,
+      "w" : 0.5,
+      "x" : 0,
+      "y" : 0
+    },
+    "maximize" : {
+      "h" : 1,
+      "w" : 1,
+      "x" : 0,
+      "y" : 0
+    },
+    "right" : {
+      "h" : 1,
+      "w" : 0.5,
+      "x" : 0.5,
+      "y" : 0
+    },
+    "right-third" : {
+      "h" : 1,
+      "w" : 0.3333333333333333,
+      "x" : 0.6666666666666666,
+      "y" : 0
+    },
+    "second-fourth" : {
+      "h" : 1,
+      "w" : 0.25,
+      "x" : 0.25,
+      "y" : 0
+    },
+    "third-fourth" : {
+      "h" : 1,
+      "w" : 0.25,
+      "x" : 0.5,
+      "y" : 0
+    },
+    "top" : {
+      "h" : 0.5,
+      "w" : 1,
+      "x" : 0,
+      "y" : 0
+    },
+    "top-left" : {
+      "h" : 0.5,
+      "w" : 0.5,
+      "x" : 0,
+      "y" : 0
+    }
+  }
+}

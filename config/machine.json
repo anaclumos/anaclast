@@ -1,0 +1,455 @@
+{
+  "homebrew": {
+    "taps": [
+      "getsentry/tools",
+      "inngest/tap",
+      "parallel-web/tap"
+    ],
+    "brews": [
+      "agent-browser",
+      "btop",
+      "bun",
+      "curl",
+      "ffmpeg",
+      "fnm",
+      "getsentry/tools/sentry",
+      "gh",
+      "googleworkspace-cli",
+      "jq",
+      "mas",
+      "media-control",
+      "mole",
+      "node@24",
+      "pam-reattach",
+      "pi-coding-agent",
+      "playwright-cli",
+      "poppler",
+      "pscale",
+      "ripgrep",
+      "rsync",
+      "scc",
+      "stripe-cli",
+      "swiftformat",
+      {
+        "name": "tailscale",
+        "startService": true,
+        "restartService": "changed"
+      },
+      "tmux",
+      "tree",
+      "vercel",
+      "watch",
+      "xcodegen",
+      "zsh-autosuggestions",
+      "zsh-syntax-highlighting"
+    ],
+    "casks": [
+      "1password",
+      "balenaetcher",
+      "chatgpt",
+      "codexbar",
+      "cursor",
+      "cursor-cli",
+      "font-sarasa-gothic",
+      "ghostty",
+      "google-chrome",
+      "iina",
+      "inngest/tap/inngest",
+      "itsycal",
+      "keka",
+      "linear",
+      "logi-options+",
+      "macs-fan-control",
+      "obsidian",
+      "ollama-app",
+      "orbstack",
+      "paper-design",
+      "parallel-web/tap/parallel-cli",
+      "slack",
+      "sublime-text",
+      "t3-code",
+      "tablepro",
+      "zen",
+      "zoom"
+    ],
+    "mas": {
+      "Amphetamine": 937984704,
+      "KakaoTalk": 869223134
+    },
+    "keep": {
+      "brews": [],
+      "casks": [
+        "hammerspoon",
+        "karabiner-elements"
+      ]
+    },
+    "cleanup": true
+  },
+  "preferences": [
+    {
+      "domain": "NSGlobalDomain",
+      "key": "com.apple.keyboard.fnState",
+      "value": false
+    },
+    {
+      "domain": "NSGlobalDomain",
+      "key": "AppleTemperatureUnit",
+      "value": "Celsius"
+    },
+    {
+      "domain": "NSGlobalDomain",
+      "key": "AppleMeasurementUnits",
+      "value": "Centimeters"
+    },
+    {
+      "domain": "NSGlobalDomain",
+      "key": "AppleMetricUnits",
+      "value": 1
+    },
+    {
+      "domain": "NSGlobalDomain",
+      "key": "_HIHideMenuBar",
+      "value": false
+    },
+    {
+      "domain": "NSGlobalDomain",
+      "key": "AppleMenuBarVisibleInFullscreen",
+      "value": true
+    },
+    {
+      "domain": "com.apple.HIToolbox",
+      "key": "AppleFnUsageType",
+      "value": 2
+    },
+    {
+      "domain": "com.apple.menuextra.clock",
+      "key": "ShowDate",
+      "value": 2
+    },
+    {
+      "domain": "com.apple.finder",
+      "key": "ShowHardDrivesOnDesktop",
+      "value": true
+    },
+    {
+      "domain": "com.apple.finder",
+      "key": "ShowPathbar",
+      "value": true
+    },
+    {
+      "domain": "com.apple.finder",
+      "key": "ShowStatusBar",
+      "value": true
+    },
+    {
+      "domain": "com.apple.finder",
+      "key": "DesktopViewSettings",
+      "value": {
+        "IconViewSettings": {
+          "arrangeBy": "grid",
+          "backgroundColorBlue": 1.0,
+          "backgroundColorGreen": 1.0,
+          "backgroundColorRed": 1.0,
+          "backgroundType": 0,
+          "gridOffsetX": 0.0,
+          "gridOffsetY": 0.0,
+          "gridSpacing": 54.0,
+          "iconSize": 64.0,
+          "labelOnBottom": false,
+          "showIconPreview": true,
+          "showItemInfo": true,
+          "textSize": 12.0,
+          "viewOptionsVersion": 1
+        }
+      }
+    },
+    {
+      "domain": "com.apple.dock",
+      "key": "persistent-apps",
+      "value": []
+    },
+    {
+      "domain": "com.apple.dock",
+      "key": "persistent-others",
+      "value": [
+        {
+          "tile-data": {
+            "arrangement": 1,
+            "displayas": 0,
+            "file-data": {
+              "_CFURLString": "file://${HOME}/Downloads/",
+              "_CFURLStringType": 15
+            },
+            "showas": 0
+          },
+          "tile-type": "directory-tile"
+        }
+      ]
+    },
+    {
+      "domain": "com.apple.dock",
+      "key": "show-recents",
+      "value": false
+    },
+    {
+      "domain": "com.apple.controlcenter",
+      "key": "AutoHideMenuBarOption",
+      "value": 3
+    },
+    {
+      "domain": "com.apple.TextInputMenu",
+      "key": "visible",
+      "value": false
+    },
+    {
+      "domain": "com.apple.TextInputMenuAgent",
+      "key": "NSStatusItem VisibleCC Item-0",
+      "value": false
+    },
+    {
+      "domain": "com.apple.systemuiserver",
+      "key": "NSStatusItem VisibleCC com.apple.menuextra.TimeMachine",
+      "value": false
+    },
+    {
+      "domain": "com.apple.systemuiserver",
+      "key": "NSStatusItem Visible com.apple.menuextra.TimeMachine",
+      "value": false
+    },
+    {
+      "domain": "com.apple.systemuiserver",
+      "key": "menuExtras",
+      "value": []
+    }
+  ],
+  "restart": {
+    "com.apple.controlcenter": "ControlCenter",
+    "com.apple.dock": "Dock",
+    "com.apple.finder": "Finder",
+    "com.apple.menuextra.clock": "ControlCenter",
+    "com.apple.systemuiserver": "SystemUIServer"
+  },
+  "links": [
+    {
+      "source": "dotfiles/zsh/zshenv",
+      "target": "~/.zshenv"
+    },
+    {
+      "source": "dotfiles/zsh/zprofile",
+      "target": "~/.zprofile"
+    },
+    {
+      "source": "dotfiles/zsh/zshrc",
+      "target": "~/.zshrc"
+    },
+    {
+      "source": "dotfiles/zsh/lib",
+      "target": "~/.config/zsh/lib"
+    },
+    {
+      "source": "dotfiles/zsh/rc",
+      "target": "~/.config/zsh/rc"
+    },
+    {
+      "source": "dotfiles/zsh/bin",
+      "target": "~/.config/zsh/bin"
+    },
+    {
+      "source": "dotfiles/tmux/tmux.conf",
+      "target": "~/.config/tmux/tmux.conf"
+    },
+    {
+      "source": "dotfiles/git/config",
+      "target": "~/.config/git/config"
+    },
+    {
+      "source": "dotfiles/git/ignore",
+      "target": "~/.config/git/ignore"
+    },
+    {
+      "source": "dotfiles/ghostty/config",
+      "target": "~/.config/ghostty/config"
+    },
+    {
+      "source": "dotfiles/cursor/settings.json",
+      "target": "~/Library/Application Support/Cursor/User/settings.json"
+    },
+    {
+      "source": "dotfiles/cursor/keybindings.json",
+      "target": "~/Library/Application Support/Cursor/User/keybindings.json"
+    },
+    {
+      "source": "dotfiles/ssh/config",
+      "target": "~/.ssh/config"
+    },
+    {
+      "source": "dotfiles/hushlogin",
+      "target": "~/.hushlogin"
+    }
+  ],
+  "clones": [
+    {
+      "url": "https://github.com/ohmyzsh/ohmyzsh.git",
+      "path": "~/.oh-my-zsh"
+    },
+    {
+      "url": "https://github.com/catppuccin/tmux.git",
+      "path": "~/.config/tmux/plugins/catppuccin/tmux"
+    }
+  ],
+  "downloads": [
+    {
+      "name": "resend",
+      "url": "https://github.com/resend/resend-cli/releases/latest/download/resend-darwin-arm64.tar.gz",
+      "format": "tar.gz",
+      "install": [
+        {
+          "from": "resend",
+          "to": "~/.local/bin/resend",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "name": "dotenvx",
+      "url": "https://github.com/dotenvx/dotenvx/releases/latest/download/dotenvx-darwin-arm64.tar.gz",
+      "format": "tar.gz",
+      "install": [
+        {
+          "from": "dotenvx",
+          "to": "~/.local/bin/dotenvx",
+          "executable": true
+        }
+      ]
+    },
+    {
+      "name": "google-cloud-sdk",
+      "url": "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-darwin-arm.tar.gz",
+      "format": "tar.gz",
+      "install": [
+        {
+          "from": "google-cloud-sdk/",
+          "to": "~/.local/share/google-cloud-sdk"
+        }
+      ]
+    },
+    {
+      "name": "sunghyun-sans",
+      "url": "https://github.com/anaclumos/sunghyun-sans/releases/latest/download/SunghyunSans-TTF.zip",
+      "format": "zip",
+      "install": [
+        { "from": "SunghyunSans-Black.ttf", "to": "~/Library/Fonts/SunghyunSans-Black.ttf" },
+        { "from": "SunghyunSans-Bold.ttf", "to": "~/Library/Fonts/SunghyunSans-Bold.ttf" },
+        { "from": "SunghyunSans-ExtraBold.ttf", "to": "~/Library/Fonts/SunghyunSans-ExtraBold.ttf" },
+        { "from": "SunghyunSans-ExtraLight.ttf", "to": "~/Library/Fonts/SunghyunSans-ExtraLight.ttf" },
+        { "from": "SunghyunSans-Light.ttf", "to": "~/Library/Fonts/SunghyunSans-Light.ttf" },
+        { "from": "SunghyunSans-Medium.ttf", "to": "~/Library/Fonts/SunghyunSans-Medium.ttf" },
+        { "from": "SunghyunSans-Regular.ttf", "to": "~/Library/Fonts/SunghyunSans-Regular.ttf" },
+        { "from": "SunghyunSans-SemiBold.ttf", "to": "~/Library/Fonts/SunghyunSans-SemiBold.ttf" },
+        { "from": "SunghyunSans-Thin.ttf", "to": "~/Library/Fonts/SunghyunSans-Thin.ttf" }
+      ]
+    },
+    {
+      "name": "sunghyun-sans-kr",
+      "url": "https://github.com/anaclumos/sunghyun-sans/releases/latest/download/SunghyunSansKR-TTF.zip",
+      "format": "zip",
+      "install": [
+        { "from": "SunghyunSansKR-Black.ttf", "to": "~/Library/Fonts/SunghyunSansKR-Black.ttf" },
+        { "from": "SunghyunSansKR-Bold.ttf", "to": "~/Library/Fonts/SunghyunSansKR-Bold.ttf" },
+        { "from": "SunghyunSansKR-ExtraBold.ttf", "to": "~/Library/Fonts/SunghyunSansKR-ExtraBold.ttf" },
+        { "from": "SunghyunSansKR-ExtraLight.ttf", "to": "~/Library/Fonts/SunghyunSansKR-ExtraLight.ttf" },
+        { "from": "SunghyunSansKR-Light.ttf", "to": "~/Library/Fonts/SunghyunSansKR-Light.ttf" },
+        { "from": "SunghyunSansKR-Medium.ttf", "to": "~/Library/Fonts/SunghyunSansKR-Medium.ttf" },
+        { "from": "SunghyunSansKR-Regular.ttf", "to": "~/Library/Fonts/SunghyunSansKR-Regular.ttf" },
+        { "from": "SunghyunSansKR-SemiBold.ttf", "to": "~/Library/Fonts/SunghyunSansKR-SemiBold.ttf" },
+        { "from": "SunghyunSansKR-Thin.ttf", "to": "~/Library/Fonts/SunghyunSansKR-Thin.ttf" }
+      ]
+    },
+    {
+      "name": "sunghyun-sans-kr-hanja",
+      "url": "https://github.com/anaclumos/sunghyun-sans/releases/latest/download/SunghyunSansKRHanja-TTF.zip",
+      "format": "zip",
+      "install": [
+        { "from": "SunghyunSansKRHanja-Black.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-Black.ttf" },
+        { "from": "SunghyunSansKRHanja-Bold.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-Bold.ttf" },
+        { "from": "SunghyunSansKRHanja-ExtraBold.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-ExtraBold.ttf" },
+        { "from": "SunghyunSansKRHanja-ExtraLight.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-ExtraLight.ttf" },
+        { "from": "SunghyunSansKRHanja-Light.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-Light.ttf" },
+        { "from": "SunghyunSansKRHanja-Medium.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-Medium.ttf" },
+        { "from": "SunghyunSansKRHanja-Regular.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-Regular.ttf" },
+        { "from": "SunghyunSansKRHanja-SemiBold.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-SemiBold.ttf" },
+        { "from": "SunghyunSansKRHanja-Thin.ttf", "to": "~/Library/Fonts/SunghyunSansKRHanja-Thin.ttf" }
+      ]
+    },
+    {
+      "name": "sunghyun-sans-jp",
+      "url": "https://github.com/anaclumos/sunghyun-sans/releases/latest/download/SunghyunSansJP-OTF.zip",
+      "format": "zip",
+      "install": [
+        { "from": "SunghyunSansJP-Black.otf", "to": "~/Library/Fonts/SunghyunSansJP-Black.otf" },
+        { "from": "SunghyunSansJP-Bold.otf", "to": "~/Library/Fonts/SunghyunSansJP-Bold.otf" },
+        { "from": "SunghyunSansJP-ExtraBold.otf", "to": "~/Library/Fonts/SunghyunSansJP-ExtraBold.otf" },
+        { "from": "SunghyunSansJP-ExtraLight.otf", "to": "~/Library/Fonts/SunghyunSansJP-ExtraLight.otf" },
+        { "from": "SunghyunSansJP-Light.otf", "to": "~/Library/Fonts/SunghyunSansJP-Light.otf" },
+        { "from": "SunghyunSansJP-Medium.otf", "to": "~/Library/Fonts/SunghyunSansJP-Medium.otf" },
+        { "from": "SunghyunSansJP-Regular.otf", "to": "~/Library/Fonts/SunghyunSansJP-Regular.otf" },
+        { "from": "SunghyunSansJP-SemiBold.otf", "to": "~/Library/Fonts/SunghyunSansJP-SemiBold.otf" },
+        { "from": "SunghyunSansJP-Thin.otf", "to": "~/Library/Fonts/SunghyunSansJP-Thin.otf" }
+      ]
+    },
+    {
+      "name": "sunghyun-sans-disambiguated",
+      "url": "https://github.com/anaclumos/sunghyun-sans/releases/latest/download/SunghyunSansDisambiguated-OTF.zip",
+      "format": "zip",
+      "install": [
+        { "from": "SunghyunSansDisambiguated-Black.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-Black.otf" },
+        { "from": "SunghyunSansDisambiguated-Bold.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-Bold.otf" },
+        { "from": "SunghyunSansDisambiguated-ExtraBold.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-ExtraBold.otf" },
+        { "from": "SunghyunSansDisambiguated-ExtraLight.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-ExtraLight.otf" },
+        { "from": "SunghyunSansDisambiguated-Light.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-Light.otf" },
+        { "from": "SunghyunSansDisambiguated-Medium.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-Medium.otf" },
+        { "from": "SunghyunSansDisambiguated-Regular.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-Regular.otf" },
+        { "from": "SunghyunSansDisambiguated-SemiBold.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-SemiBold.otf" },
+        { "from": "SunghyunSansDisambiguated-Thin.otf", "to": "~/Library/Fonts/SunghyunSansDisambiguated-Thin.otf" }
+      ]
+    }
+  ],
+  "bunGlobals": [
+    "@linqapp/cli",
+    "agent-slack",
+    "linearis",
+    "mcporter",
+    "mint",
+    "ntn",
+    "starcovery",
+    "tokenmaxxing"
+  ],
+  "sudoLocal": "auth       optional       /opt/homebrew/lib/pam/pam_reattach.so\nauth       sufficient     pam_tid.so\n",
+  "remoteLogin": true,
+  "hosts": {
+    "default": {},
+    "auracomputer": {
+      "computerName": "Auracomputer",
+      "hostName": "auracomputer",
+      "localHostName": "auracomputer",
+      "authorizedKeys": [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfIuLXlMZdhVBuskXewHup9R9abgg/ToF2ffewtFeNT"
+      ]
+    },
+    "twelvecomputer": {
+      "computerName": "Twelvecomputer",
+      "hostName": "twelvecomputer",
+      "localHostName": "twelvecomputer",
+      "casks": [
+        "okta-verify",
+        "openvpn-connect"
+      ],
+      "env": {
+        "ANACLAST_CURSOR_USAGE_PUSH": "0"
+      },
+      "authorizedKeys": [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEZleyz9sVAw+hKMfzePlCR2eKl+YVLmNceuHt6XsVey"
+      ]
+    }
+  }
+}

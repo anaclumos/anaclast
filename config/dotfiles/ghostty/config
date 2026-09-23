@@ -1,0 +1,4 @@
+font-family = Sarasa Mono K
+term = xterm-256color
+unfocused-split-opacity = 1
+working-directory = ~/Developer

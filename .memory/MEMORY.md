@@ -1,0 +1,15 @@
+- [Anaclast replaces sunghyun.nix](anaclast-replaces-sunghyun-nix.md) — why Anaclast exists, its name, and the owner's 2026-09-23 scope decisions
+- [Keyboard never bricks](keyboard-never-bricks.md) — no HID seize; failure means no remap, never no keys
+- [Synthesized keys and system hotkeys](synthesized-keys-and-system-hotkeys.md) — posted chords miss the system hotkey matcher on macOS 26+
+- [Input source switching](input-source-switching.md) — out-of-process TISSelectInputSource does not switch the focused app
+- [Ask Siri hotkey 263](ask-siri-hotkey-263.md) — re-enables itself live; kill on launch, every 60 s, on wake
+- [Report live state](report-live-state.md) — probe the running app before claiming done
+- [Target macOS Golden Gate](target-macos-golden-gate.md) — macOS 27 only, use its SDK features
+- [Synthetic input needs an unlocked target](synthetic-input-needs-unlocked-target.md) — check lock state and frontmost app before posting keys
+- [dotenvx 2 dropped -p](dotenvx-2-dropped-p-shorthand.md) — `set -p --plain` silently writes a bogus key on 2.x; use `--plain`
+- [brew bundle cleanup removes App Store apps](brew-bundle-cleanup-removes-mas-apps.md) — undeclared mas apps are uninstalled on apply
+- [HID matching without open](hid-matching-without-open.md) — keyboard arrival callbacks need no Input Monitoring
+- [WWDR G3 intermediate missing](wwdr-g3-intermediate-missing.md) — a new Apple Development certificate stays invalid until G3 is in the keychain
+- [SwiftUI scale distorts AppKit text fields](swiftui-scale-distorts-appkit-text-field.md) — scale panel content through a layer transform, never `.scaleEffect`
+- [WeatherKit needs the App Services toggle](weatherkit-needs-app-services-toggle.md) — JWT error 2 until WeatherKit is checked on the App ID's App Services tab
+- ["Do it" covers the final click](do-it-covers-the-final-click.md) — a named go-ahead includes Save and its confirm dialog, and "don't ask" means pick the recommended default
