@@ -3,17 +3,17 @@ import Testing
 @testable import AnaclastCore
 
 @Suite struct ConfigFileTests {
-    let config = try! Config.load(from: repoConfigURL)
+    let config = try! Config.load(from: fixtureConfigURL)
 
     func scratchCopy() throws -> URL {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appending(path: "anaclast.json")
-        try FileManager.default.copyItem(at: repoConfigURL, to: url)
+        try FileManager.default.copyItem(at: fixtureConfigURL, to: url)
         return url
     }
 
-    @Test func repoConfigSurvivesAWriteAndRead() throws {
+    @Test func configSurvivesAWriteAndRead() throws {
         let decoded = try JSONDecoder().decode(Config.self, from: config.encoded())
         #expect(decoded == config)
     }

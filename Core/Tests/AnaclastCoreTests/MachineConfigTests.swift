@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import AnaclastCore
 
-let fixtureHome = "/Users/sc"
+let fixtureHome = "/Users/someone"
 
 let machineFixture = #"""
 {
@@ -72,17 +72,17 @@ let machineFixture = #"""
       "install": [{ "from": "resend", "to": "~/.local/bin/resend", "executable": true }]
     }
   ],
-  "bunGlobals": ["@linqapp/cli", "agent-slack", "linearis", "mcporter", "mint", "ntn", "starcovery", "tokenmaxxing"],
+  "bunGlobals": ["@linqapp/cli", "agent-slack", "linearis", "mcporter", "mint", "ntn", "starter-cli", "toolkit-cli"],
   "sudoLocal": "auth       optional       /opt/homebrew/lib/pam/pam_reattach.so\nauth       sufficient     pam_tid.so\n",
   "remoteLogin": true,
   "hosts": {
-    "auracomputer": {
-      "computerName": "Auracomputer", "hostName": "auracomputer", "localHostName": "auracomputer",
+    "homecomputer": {
+      "computerName": "Homecomputer", "hostName": "homecomputer", "localHostName": "homecomputer",
       "authorizedKeys": ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfIuLXlMZdhVBuskXewHup9R9abgg/ToF2ffewtFeNT"]
     },
-    "twelvecomputer": {
-      "computerName": "Twelvecomputer", "hostName": "twelvecomputer", "localHostName": "twelvecomputer",
-      "env": { "SUNGHYUN_CURSOR_USAGE_PUSH": "0", "SUNGHYUN_WORKSPACE": "${HOME}/Developer/TwelveLabs" },
+    "workcomputer": {
+      "computerName": "Workcomputer", "hostName": "workcomputer", "localHostName": "workcomputer",
+      "env": { "SAMPLE_USAGE_PUSH": "0", "SAMPLE_WORKSPACE": "${HOME}/Developer/Work" },
       "authorizedKeys": ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEZleyz9sVAw+hKMfzePlCR2eKl+YVLmNceuHt6XsVey"],
       "casks": ["okta-verify", "openvpn-connect", "zoom"]
     },
@@ -123,7 +123,7 @@ func loadError(_ json: String) -> String? {
         #expect(config.downloads.first?.install.first?.executable == true)
         #expect(config.bunGlobals.count == 8)
         #expect(config.remoteLogin)
-        #expect(Set(config.hosts.keys) == ["auracomputer", "twelvecomputer", "default"])
+        #expect(Set(config.hosts.keys) == ["homecomputer", "workcomputer", "default"])
         let tailscale = try #require(config.homebrew.brews.first { $0.name == "tailscale" })
         #expect(tailscale.startService)
         #expect(tailscale.restartService == .changed)
@@ -149,17 +149,17 @@ func loadError(_ json: String) -> String? {
         let config = try loadFixture()
         let others = try #require(config.preferences.first { $0.key == "persistent-others" }?.value as? [[String: Any]])
         let fileData = try #require((others.first?["tile-data"] as? [String: Any])?["file-data"] as? [String: Any])
-        #expect(fileData["_CFURLString"] as? String == "file:///Users/sc/Downloads/")
+        #expect(fileData["_CFURLString"] as? String == "file:///Users/someone/Downloads/")
         #expect(config.links.map(\.target) == [
-            "/Users/sc/.config/zsh/lib",
-            "/Users/sc/.config/zsh/rc",
-            "/Users/sc/.ssh/config",
-            "/Users/sc/Library/Application Support/Cursor/User/keybindings.json",
+            "/Users/someone/.config/zsh/lib",
+            "/Users/someone/.config/zsh/rc",
+            "/Users/someone/.ssh/config",
+            "/Users/someone/Library/Application Support/Cursor/User/keybindings.json",
         ])
         #expect(config.links.first?.source == "dotfiles/zsh/lib")
-        #expect(config.clones.first?.path == "/Users/sc/.oh-my-zsh")
-        #expect(config.downloads.first?.install.first?.to == "/Users/sc/.local/bin/resend")
-        #expect(config.hosts["twelvecomputer"]?.env?["SUNGHYUN_WORKSPACE"] == "/Users/sc/Developer/TwelveLabs")
+        #expect(config.clones.first?.path == "/Users/someone/.oh-my-zsh")
+        #expect(config.downloads.first?.install.first?.to == "/Users/someone/.local/bin/resend")
+        #expect(config.hosts["workcomputer"]?.env?["SAMPLE_WORKSPACE"] == "/Users/someone/Developer/Work")
     }
 
     @Test func rejectsUnknownKeysNamingThePath() {
@@ -169,7 +169,7 @@ func loadError(_ json: String) -> String? {
             (#""cleanup": true"#, #""cleanup": true, "upgrade": true"#, "unknown key \"upgrade\" in homebrew"),
             (#""key": "ShowDate","#, #""key": "ShowDate", "host": true,"#, "unknown key \"host\" in preferences[7]"),
             (#""executable": true"#, #""executable": true, "mode": 493"#, "unknown key \"mode\" in downloads[0].install[0]"),
-            (#""casks": ["okta-verify""#, #""cask": [], "casks": ["okta-verify""#, "unknown key \"cask\" in hosts.twelvecomputer"),
+            (#""casks": ["okta-verify""#, #""cask": [], "casks": ["okta-verify""#, "unknown key \"cask\" in hosts.workcomputer"),
             (#""keep": { "brews": ["xcodegen"]"#, #""keep": { "formulae": [], "brews": ["xcodegen"]"#, "unknown key \"formulae\" in homebrew.keep"),
         ]
         for (original, replacement, message) in cases {
@@ -205,7 +205,7 @@ func loadError(_ json: String) -> String? {
             (#""source": "dotfiles/zsh/lib""#, #""source": "/etc/zshrc""#, "links[0].source must be relative to the config directory"),
             (#""target": "~/.ssh/config""#, #""target": ".ssh/config""#, "links[2].target must be absolute or start with ~/ or ${HOME}"),
             (#""path": "~/.oh-my-zsh""#, #""path": "$HOME/.oh-my-zsh""#, "clones[0].path must be absolute or start with ~/ or ${HOME}"),
-            (#""SUNGHYUN_CURSOR_USAGE_PUSH": "0""#, #""CURSOR-PUSH": "0""#, "hosts.twelvecomputer.env: \"CURSOR-PUSH\" is not a shell variable name"),
+            (#""SAMPLE_USAGE_PUSH": "0""#, #""CURSOR-PUSH": "0""#, "hosts.workcomputer.env: \"CURSOR-PUSH\" is not a shell variable name"),
         ]
         for (original, replacement, message) in cases {
             #expect(loadError(fixtureReplacing(original, with: replacement)) == message)
@@ -214,22 +214,22 @@ func loadError(_ json: String) -> String? {
 
     @Test func resolvesTheCurrentHost() throws {
         let config = try loadFixture()
-        let twelve = config.host(named: "twelvecomputer")
-        #expect(twelve.key == "twelvecomputer")
-        #expect(twelve.casks.count == 28)
-        #expect(Array(twelve.casks.suffix(2)) == ["okta-verify", "openvpn-connect"])
-        #expect(twelve.brews.count == 12)
-        #expect(twelve.env == ["SUNGHYUN_CURSOR_USAGE_PUSH": "0", "SUNGHYUN_WORKSPACE": "/Users/sc/Developer/TwelveLabs"])
-        #expect(twelve.names == [.computerName: "Twelvecomputer", .hostName: "twelvecomputer", .localHostName: "twelvecomputer"])
-        #expect(twelve.authorizedKeys?.count == 1)
+        let work = config.host(named: "workcomputer")
+        #expect(work.key == "workcomputer")
+        #expect(work.casks.count == 28)
+        #expect(Array(work.casks.suffix(2)) == ["okta-verify", "openvpn-connect"])
+        #expect(work.brews.count == 12)
+        #expect(work.env == ["SAMPLE_USAGE_PUSH": "0", "SAMPLE_WORKSPACE": "/Users/someone/Developer/Work"])
+        #expect(work.names == [.computerName: "Workcomputer", .hostName: "workcomputer", .localHostName: "workcomputer"])
+        #expect(work.authorizedKeys?.count == 1)
 
-        let aura = config.host(named: "auracomputer")
-        #expect(aura.key == "auracomputer")
-        #expect(aura.casks.count == 26)
-        #expect(aura.env.isEmpty)
-        #expect(aura.names[.computerName] == "Auracomputer")
+        let home = config.host(named: "homecomputer")
+        #expect(home.key == "homecomputer")
+        #expect(home.casks.count == 26)
+        #expect(home.env.isEmpty)
+        #expect(home.names[.computerName] == "Homecomputer")
 
-        let unknown = config.host(named: "Sunghyuns-MacBook-Pro")
+        let unknown = config.host(named: "Someones-MacBook-Pro")
         #expect(unknown.key == "default")
         #expect(unknown.names.isEmpty)
         #expect(unknown.authorizedKeys == nil)
@@ -251,7 +251,7 @@ func loadError(_ json: String) -> String? {
 
     @Test func unknownHostWithoutDefaultGetsNothingExtra() throws {
         let config = try loadFixture(fixtureReplacing(",\n    \"default\": {}", with: ""))
-        let view = config.host(named: "Sunghyuns-MacBook-Pro")
+        let view = config.host(named: "Someones-MacBook-Pro")
         #expect(view.key == nil)
         #expect(view.names.isEmpty)
         #expect(view.env.isEmpty)

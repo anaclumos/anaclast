@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import AnaclastCore
 
-let configDirectory = "/Users/sc/Developer/anaclast/config"
+let configDirectory = "/Users/someone/Developer/anaclast/config"
 let nixStore = "/nix/store/9sd0bizr898a9zkvxv9brafg42hzpadk-home-manager-files"
 
 let checkStderr = """
@@ -28,21 +28,21 @@ Would uninstall formulae:
 swiftformat
 libpng
 Would `brew cleanup`:
-Would remove: /Users/sc/Library/Caches/Homebrew/Cask/codexbar--0.60.4.zip (70.5MB)
+Would remove: /Users/someone/Library/Caches/Homebrew/Cask/codexbar--0.60.4.zip (70.5MB)
 Would remove (empty directory): /opt/homebrew/lib/gio
 Run `brew bundle cleanup --force` to make these changes.
 
 """
 
 let bunListing = """
-/Users/sc/.bun/install/global node_modules (1250)
+/Users/someone/.bun/install/global node_modules (1250)
 ├── @linqapp/cli@2.6.0
 ├── agent-slack@0.9.3
 ├── linearis@2026.8.0
 ├── mcporter@0.13.7
 ├── mint@4.2.784
-├── starcovery@0.1.4
-└── tokenmaxxing@1.67.0
+├── starter-cli@0.1.4
+└── toolkit-cli@1.67.0
 
 """
 
@@ -74,7 +74,7 @@ var liveDownloadsTile: [String: Any] {[
         "arrangement": 1,
         "book": Data(repeating: 0x62, count: 668),
         "displayas": 0,
-        "file-data": ["_CFURLString": "file:///Users/sc/Downloads/", "_CFURLStringType": 15] as [String: Any],
+        "file-data": ["_CFURLString": "file:///Users/someone/Downloads/", "_CFURLStringType": 15] as [String: Any],
         "file-label": "Downloads",
         "file-mod-date": 260781401798699,
         "file-type": 2,
@@ -95,7 +95,7 @@ var liveDesktopViewSettings: [String: Any] {[
 ]}
 
 struct FakeProbe: MachineProbe {
-    var names: [MachineConfig.HostNameKind: String] = [.computerName: "Auracomputer", .hostName: "auracomputer", .localHostName: "auracomputer"]
+    var names: [MachineConfig.HostNameKind: String] = [.computerName: "Homecomputer", .hostName: "homecomputer", .localHostName: "homecomputer"]
     var brewMissing = false
     var check = CommandOutput(status: 1, stdout: "", stderr: checkStderr)
     var cleanup = CommandOutput(status: 1, stdout: cleanupStdout, stderr: "")
@@ -121,13 +121,13 @@ struct FakeProbe: MachineProbe {
         "com.apple.Siri/StatusMenuVisible/currentHost": false,
     ]
     var states: [String: FileState] = [
-        "/Users/sc/.oh-my-zsh": .directory,
+        "/Users/someone/.oh-my-zsh": .directory,
         "\(configDirectory)/dotfiles/zsh/lib": .directory,
         "\(configDirectory)/dotfiles/zsh/rc": .directory,
         "\(configDirectory)/dotfiles/cursor/User/keybindings.json": .file,
-        "/Users/sc/.config/zsh/lib": .link("\(nixStore)/.config/zsh/lib"),
-        "/Users/sc/.config/zsh/rc": .link("\(configDirectory)/dotfiles/zsh/rc"),
-        "/Users/sc/Library/Application Support/Cursor/User/keybindings.json": .file,
+        "/Users/someone/.config/zsh/lib": .link("\(nixStore)/.config/zsh/lib"),
+        "/Users/someone/.config/zsh/rc": .link("\(configDirectory)/dotfiles/zsh/rc"),
+        "/Users/someone/Library/Application Support/Cursor/User/keybindings.json": .file,
         "/etc/pam.d/sudo_local": .link("/etc/static/pam.d/sudo_local"),
     ]
     var files: [String: String] = ["/etc/pam.d/sudo_local": nixSudoLocal]
@@ -170,7 +170,7 @@ func shell(_ script: String) throws -> String {
 @Suite struct MachinePlanTests {
     @Test func plansEverySection() async throws {
         let plan = try await makePlan()
-        #expect(plan.host == "auracomputer")
+        #expect(plan.host == "homecomputer")
         #expect(plan.steps.map(\.description) == [
             "Cask codexbar needs to be installed or updated.",
             "Formula mole needs to be installed or updated.",
@@ -181,13 +181,13 @@ func shell(_ script: String) throws -> String {
             "Uninstall casks: balenaetcher",
             "Uninstall formulae: swiftformat",
             "Uninstall formulae: libpng",
-            "Pull /Users/sc/.oh-my-zsh (fast-forward only)",
-            "Download resend-cli to /Users/sc/.local/bin/resend",
+            "Pull /Users/someone/.oh-my-zsh (fast-forward only)",
+            "Download resend-cli to /Users/someone/.local/bin/resend",
             "Install bun global ntn",
-            "Replace /Users/sc/.config/zsh/lib (a link to \(nixStore)/.config/zsh/lib) with a link to \(configDirectory)/dotfiles/zsh/lib",
-            "Replace /Users/sc/Library/Application Support/Cursor/User/keybindings.json (a file) with a link to \(configDirectory)/dotfiles/cursor/User/keybindings.json",
-            "Write /Users/sc/.config/zsh/host.zsh",
-            "Write /Users/sc/.ssh/authorized_keys",
+            "Replace /Users/someone/.config/zsh/lib (a link to \(nixStore)/.config/zsh/lib) with a link to \(configDirectory)/dotfiles/zsh/lib",
+            "Replace /Users/someone/Library/Application Support/Cursor/User/keybindings.json (a file) with a link to \(configDirectory)/dotfiles/cursor/User/keybindings.json",
+            "Write /Users/someone/.config/zsh/host.zsh",
+            "Write /Users/someone/.ssh/authorized_keys",
             "NSGlobalDomain _HIHideMenuBar: (unset) -> false",
             "NSGlobalDomain AppleMenuBarVisibleInFullscreen: false -> true",
             "com.apple.finder ShowHardDrivesOnDesktop: (unset) -> true",
@@ -205,7 +205,7 @@ func shell(_ script: String) throws -> String {
         #expect(plan.steps.indices.filter { plan.steps[$0].isDestructive } == [6, 7, 8, 12, 13, 27])
         #expect(plan.destructiveCount == 6)
         #expect(plan.steps.map(\.category) == plan.steps.map(\.category).sorted())
-        #expect(plan.notes == [MachinePlan.Note(category: .links, message: "\(configDirectory)/dotfiles/ssh/config does not exist, so /Users/sc/.ssh/config is not linked")])
+        #expect(plan.notes == [MachinePlan.Note(category: .links, message: "\(configDirectory)/dotfiles/ssh/config does not exist, so /Users/someone/.ssh/config is not linked")])
         #expect(plan.categories == MachineStep.Category.allCases)
         #expect(plan.stepIndices(in: .restarts) == [25, 26])
     }
@@ -215,7 +215,7 @@ func shell(_ script: String) throws -> String {
         let files = plan.steps.compactMap { step -> GeneratedFile? in
             if case .file(let file, _) = step { file } else { nil }
         }
-        #expect(files.map(\.path) == ["/Users/sc/.config/zsh/host.zsh", "/Users/sc/.ssh/authorized_keys"])
+        #expect(files.map(\.path) == ["/Users/someone/.config/zsh/host.zsh", "/Users/someone/.ssh/authorized_keys"])
         #expect(files[0].contents == "")
         #expect(files[1].contents == "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfIuLXlMZdhVBuskXewHup9R9abgg/ToF2ffewtFeNT\n")
         #expect(files[1].mode == 0o600)
@@ -233,10 +233,10 @@ func shell(_ script: String) throws -> String {
             probe.states[source] = .file
             probe.states[link.target] = .link(source)
         }
-        probe.states["/Users/sc/.local/bin/resend"] = .file
+        probe.states["/Users/someone/.local/bin/resend"] = .file
         let authorizedKeys = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfIuLXlMZdhVBuskXewHup9R9abgg/ToF2ffewtFeNT\n"
         let sudoLocal = "auth       optional       /opt/homebrew/lib/pam/pam_reattach.so\nauth       sufficient     pam_tid.so\n"
-        for (path, contents) in ["/Users/sc/.config/zsh/host.zsh": "", "/Users/sc/.ssh/authorized_keys": authorizedKeys, "/etc/pam.d/sudo_local": sudoLocal] {
+        for (path, contents) in ["/Users/someone/.config/zsh/host.zsh": "", "/Users/someone/.ssh/authorized_keys": authorizedKeys, "/etc/pam.d/sudo_local": sudoLocal] {
             probe.states[path] = .file
             probe.files[path] = contents
         }
@@ -251,34 +251,34 @@ func shell(_ script: String) throws -> String {
         }
         probe.preferences["com.apple.controlcenter/AutoHideMenuBarOption"] = 3
         let plan = try await makePlan(probe)
-        #expect(plan.steps.map(\.description) == ["Pull /Users/sc/.oh-my-zsh (fast-forward only)"])
+        #expect(plan.steps.map(\.description) == ["Pull /Users/someone/.oh-my-zsh (fast-forward only)"])
         #expect(plan.notes.isEmpty)
         #expect(plan.destructiveCount == 0)
     }
 
     @Test func renamesAndRefreshesOnAnotherHost() async throws {
         var probe = FakeProbe()
-        probe.names = [.computerName: "Sunghyun's MacBook Pro", .localHostName: "twelvecomputer"]
-        probe.states["/Users/sc/.oh-my-zsh"] = nil
-        probe.states["/Users/sc/.local/bin/resend"] = .file
-        probe.states["/Users/sc/.ssh/authorized_keys"] = .file
-        probe.files["/Users/sc/.ssh/authorized_keys"] = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfIuLXlMZdhVBuskXewHup9R9abgg/ToF2ffewtFeNT\n"
+        probe.names = [.computerName: "Someone's MacBook Pro", .localHostName: "workcomputer"]
+        probe.states["/Users/someone/.oh-my-zsh"] = nil
+        probe.states["/Users/someone/.local/bin/resend"] = .file
+        probe.states["/Users/someone/.ssh/authorized_keys"] = .file
+        probe.files["/Users/someone/.ssh/authorized_keys"] = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfIuLXlMZdhVBuskXewHup9R9abgg/ToF2ffewtFeNT\n"
         let plan = try await makePlan(probe, refreshDownloads: true)
-        #expect(plan.host == "twelvecomputer")
+        #expect(plan.host == "workcomputer")
         let descriptions = plan.steps.map(\.description)
-        #expect(descriptions.contains("Clone https://github.com/ohmyzsh/ohmyzsh.git into /Users/sc/.oh-my-zsh"))
-        #expect(descriptions.contains("Download resend-cli again, replacing /Users/sc/.local/bin/resend"))
-        #expect(descriptions.contains("Replace /Users/sc/.ssh/authorized_keys (a file)"))
+        #expect(descriptions.contains("Clone https://github.com/ohmyzsh/ohmyzsh.git into /Users/someone/.oh-my-zsh"))
+        #expect(descriptions.contains("Download resend-cli again, replacing /Users/someone/.local/bin/resend"))
+        #expect(descriptions.contains("Replace /Users/someone/.ssh/authorized_keys (a file)"))
         #expect(Array(descriptions.suffix(4)) == [
             "Replace /etc/pam.d/sudo_local, keeping the old file as /etc/pam.d/sudo_local.anaclast-backup-20260923T043512Z",
-            "Set ComputerName: Sunghyun's MacBook Pro -> Twelvecomputer",
-            "Set HostName: (unset) -> twelvecomputer",
+            "Set ComputerName: Someone's MacBook Pro -> Workcomputer",
+            "Set HostName: (unset) -> workcomputer",
             "Turn on Remote Login (com.openssh.sshd)",
         ])
         let hostFile = try #require(plan.steps.lazy.compactMap { step -> GeneratedFile? in
             if case .file(let file, _) = step, file.path.hasSuffix("host.zsh") { file } else { nil }
         }.first)
-        #expect(hostFile.contents == "export SUNGHYUN_CURSOR_USAGE_PUSH='0'\nexport SUNGHYUN_WORKSPACE='/Users/sc/Developer/TwelveLabs'\n")
+        #expect(hostFile.contents == "export SAMPLE_USAGE_PUSH='0'\nexport SAMPLE_WORKSPACE='/Users/someone/Developer/Work'\n")
         #expect(plan.steps.filter(\.isDestructive).map(\.category) == [.homebrew, .homebrew, .homebrew, .downloads, .links, .links, .generatedFiles, .system])
     }
 
@@ -302,7 +302,7 @@ func shell(_ script: String) throws -> String {
         #expect(plan.notes.map(\.message) == [
             "cleanup was not checked: /opt/homebrew/bin/brew is not installed",
             "bun is not installed, so every global is listed",
-            "\(configDirectory)/dotfiles/ssh/config does not exist, so /Users/sc/.ssh/config is not linked",
+            "\(configDirectory)/dotfiles/ssh/config does not exist, so /Users/someone/.ssh/config is not linked",
             "Remote Login check skipped: launchctl print-disabled system does not list com.openssh.sshd",
         ])
         #expect(!plan.steps.contains { if case .remoteLogin = $0 { true } else { false } })
@@ -310,7 +310,7 @@ func shell(_ script: String) throws -> String {
 
     @Test func rendersBrewfiles() throws {
         let config = try loadFixture()
-        let brewfile = Brewfile(homebrew: config.homebrew, host: config.host(named: "twelvecomputer"))
+        let brewfile = Brewfile(homebrew: config.homebrew, host: config.host(named: "workcomputer"))
         let install = brewfile.install.split(separator: "\n")
         #expect(install.count == 3 + 12 + 28 + 2)
         #expect(Array(install.prefix(4)) == [#"tap "getsentry/tools""#, #"tap "inngest/tap""#, #"tap "parallel-web/tap""#, #"brew "agent-browser""#])
@@ -353,7 +353,7 @@ func shell(_ script: String) throws -> String {
         Would uninstall Mac App Store apps:
         KakaoTalk (869223134)
         Would `brew cleanup`:
-        Would remove: /Users/sc/Library/Caches/Homebrew/Cask/codexbar--0.60.4.zip (70.5MB)
+        Would remove: /Users/someone/Library/Caches/Homebrew/Cask/codexbar--0.60.4.zip (70.5MB)
         Would remove (empty directory): /opt/homebrew/lib/gio/modules
         Run `brew bundle cleanup --force` to make these changes.
 
@@ -372,7 +372,7 @@ func shell(_ script: String) throws -> String {
     }
 
     @Test func readsBunAndLaunchdListings() {
-        #expect(MachinePlan.bunPackages(inListing: bunListing) == ["@linqapp/cli", "agent-slack", "linearis", "mcporter", "mint", "starcovery", "tokenmaxxing"])
+        #expect(MachinePlan.bunPackages(inListing: bunListing) == ["@linqapp/cli", "agent-slack", "linearis", "mcporter", "mint", "starter-cli", "toolkit-cli"])
         #expect(MachinePlan.packageName("@linqapp/cli@2.6.0") == "@linqapp/cli")
         #expect(MachinePlan.packageName("@linqapp/cli") == "@linqapp/cli")
         #expect(MachinePlan.packageName("linearis@2026.8.0") == "linearis")
@@ -387,7 +387,7 @@ func shell(_ script: String) throws -> String {
         let config = try loadFixture()
         let desired = { (key: String) in config.preferences.first { $0.key == key }!.value }
         #expect(MachinePlan.matches(live: [liveDownloadsTile], desired: desired("persistent-others")))
-        let fileData: [String: Any] = ["_CFURLString": "file:///Users/sc/Downloads", "_CFURLStringType": 15]
+        let fileData: [String: Any] = ["_CFURLString": "file:///Users/someone/Downloads", "_CFURLStringType": 15]
         let tile: [String: Any] = ["tile-data": ["file-data": fileData], "tile-type": "directory-tile"]
         #expect(!MachinePlan.matches(live: [liveDownloadsTile], desired: [tile]))
         #expect(!MachinePlan.matches(live: [liveDownloadsTile, liveDownloadsTile], desired: desired("persistent-others")))
@@ -425,16 +425,16 @@ func shell(_ script: String) throws -> String {
     }
 
     @Test func hostEnvironmentFileSourcesBack() throws {
-        let env = ["SUNGHYUN_CURSOR_USAGE_PUSH": "0", "QUOTED": "it's $HOME", "MULTI": "a\nb"]
+        let env = ["SAMPLE_USAGE_PUSH": "0", "QUOTED": "it's $HOME", "MULTI": "a\nb"]
         let file = GeneratedFile.hostEnvironment(env, home: fixtureHome)
-        #expect(file.path == "/Users/sc/.config/zsh/host.zsh")
+        #expect(file.path == "/Users/someone/.config/zsh/host.zsh")
         #expect(file.contents.split(separator: "\n").first == "export MULTI='a")
         let directory = FileManager.default.temporaryDirectory.appending(path: "anaclast-tests-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appending(path: "host.zsh")
         try Data(file.contents.utf8).write(to: url)
-        let output = try shell(". \(url.path.shellQuoted); /usr/bin/printf '%s|%s|%s' \"$SUNGHYUN_CURSOR_USAGE_PUSH\" \"$QUOTED\" \"$MULTI\"")
+        let output = try shell(". \(url.path.shellQuoted); /usr/bin/printf '%s|%s|%s' \"$SAMPLE_USAGE_PUSH\" \"$QUOTED\" \"$MULTI\"")
         #expect(output == "0|it's $HOME|a\nb")
     }
 
@@ -442,15 +442,15 @@ func shell(_ script: String) throws -> String {
         let contents = "auth       optional       /opt/homebrew/lib/pam/pam_reattach.so\nauth       sufficient     pam_tid.so\n# it's $(id)\n"
         let steps: [MachineStep] = [
             .sudoLocal(contents, replacing: true, backup: planBackup),
-            .hostName(.computerName, from: "Sunghyun's MacBook Pro", to: "Sunghyun's \"Mac\" $(reboot)"),
-            .hostName(.localHostName, from: nil, to: "twelvecomputer"),
+            .hostName(.computerName, from: "Someone's MacBook Pro", to: "Someone's \"Mac\" $(reboot)"),
+            .hostName(.localHostName, from: nil, to: "workcomputer"),
             .remoteLogin,
         ]
         let script = RootScript.render(steps)
         let lines = script.split(separator: "\n", omittingEmptySubsequences: false)
         #expect(lines.first == "#!/bin/sh")
-        #expect(script.contains("/usr/sbin/scutil --set ComputerName 'Sunghyun'\\''s \"Mac\" $(reboot)'\n/bin/echo anaclast-root-status 1 $?\n"))
-        #expect(script.contains("/usr/sbin/scutil --set LocalHostName 'twelvecomputer'\n/bin/echo anaclast-root-status 2 $?\n"))
+        #expect(script.contains("/usr/sbin/scutil --set ComputerName 'Someone'\\''s \"Mac\" $(reboot)'\n/bin/echo anaclast-root-status 1 $?\n"))
+        #expect(script.contains("/usr/sbin/scutil --set LocalHostName 'workcomputer'\n/bin/echo anaclast-root-status 2 $?\n"))
         #expect(script.contains("/bin/launchctl enable system/com.openssh.sshd && /bin/launchctl bootstrap system /System/Library/LaunchDaemons/ssh.plist\n/bin/echo anaclast-root-status 3 $?\n"))
         #expect(script.hasSuffix("exit 0\n"))
         let directory = FileManager.default.temporaryDirectory.appending(path: "anaclast-tests-\(UUID().uuidString)")

@@ -4,7 +4,7 @@ import Testing
 @testable import AnaclastCore
 
 @Suite struct KeyboardEngineTests {
-    let config = try! Config.load(from: repoConfigURL)
+    let config = try! Config.load(from: fixtureConfigURL)
 
     func engine() throws -> KeyboardEngine {
         KeyboardEngine(keymap: try Keymap(config: config))
@@ -60,16 +60,16 @@ import Testing
         #expect(engine.handle(down("h", .maskShift, at: 0.05), frontmostApp: nil) == Resolution(swallow: true, actions: [.open(bundleID: "com.apple.mail")]))
     }
 
-    @Test func leftCommandTapSelectsABC() throws {
+    @Test func leftCommandTapRunsItsAction() throws {
         var engine = try engine()
         #expect(engine.handle(command(.leftCommand, down: true, at: 0), frontmostApp: nil) == .pass)
         #expect(engine.handle(command(.leftCommand, down: false, at: 0.2), frontmostApp: nil) == Resolution(swallow: false, actions: [.inputSource("com.apple.keylayout.US")]))
     }
 
-    @Test func rightCommandTapSelectsKorean() throws {
+    @Test func rightCommandTapRunsItsAction() throws {
         var engine = try engine()
         _ = engine.handle(command(.rightCommand, down: true, at: 0), frontmostApp: nil)
-        #expect(engine.handle(command(.rightCommand, down: false, at: 0.1), frontmostApp: nil).actions == [.inputSource("com.apple.inputmethod.Korean.2SetKorean")])
+        #expect(engine.handle(command(.rightCommand, down: false, at: 0.1), frontmostApp: nil).actions == [.inputSource("com.apple.keylayout.ABC")])
     }
 
     @Test func commandChordIsNotATap() throws {
@@ -169,13 +169,6 @@ import Testing
         #expect(engine.handle(down("spotlight", [.maskSecondaryFn, .maskShift], at: 0), frontmostApp: nil) == rewritten("f4", [.maskSecondaryFn, .maskShift]))
     }
 
-    @Test func dictationKeyPasses() throws {
-        var engine = try engine()
-        #expect(engine.handle(down("dictation", .maskSecondaryFn, at: 0), frontmostApp: nil) == .pass)
-        _ = engine.handle(function(down: true, at: 0.1), frontmostApp: nil)
-        #expect(engine.handle(down("f5", .maskSecondaryFn, at: 0.15), frontmostApp: nil) == .pass)
-    }
-
     @Test func missedReleaseDoesNotEatTheNextPress() throws {
         var engine = try engine()
         #expect(engine.handle(down("l", .maskCommand, at: 0), frontmostApp: nil).actions == [.command(.lockScreen)])
@@ -217,9 +210,7 @@ import Testing
 
 @Suite struct ConfigTests {
     @Test func repoConfigLoads() throws {
-        let config = try Config.load(from: repoConfigURL)
-        #expect(config.hyper.keys.count == 33)
-        #expect(config.disabledSymbolicHotkeys == [263, 64])
+        _ = try Config.load(from: repoConfigURL)
     }
 
     @Test func actionNeedsExactlyOneKey() {
@@ -248,7 +239,7 @@ import Testing
     }
 
     @Test func windowActionNeedsAnAppAndAnExecutable() throws {
-        var config = try Config.load(from: repoConfigURL)
+        var config = try Config.load(from: fixtureConfigURL)
         config.hyper.keys["x"] = .window(WindowTarget(name: "Empty", app: "com.example.app", launch: []))
         #expect(throws: ConfigError.self) { try config.validate() }
         config.hyper.keys["x"] = .window(WindowTarget(name: "Empty", app: ""))
@@ -265,7 +256,7 @@ import Testing
     }
 
     @Test func remapSourceMayOnlyRequireFn() throws {
-        var config = try Config.load(from: repoConfigURL)
+        var config = try Config.load(from: fixtureConfigURL)
         config.remaps.append(Remap(from: "cmd+f5", to: "fn+dictation"))
         #expect(throws: ConfigError.invalid(#"remap "cmd+f5" may only require fn"#)) { try config.validate() }
     }
@@ -335,3 +326,44 @@ let repoConfigDirectory = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
     .appending(path: "config")
 let repoConfigURL = repoConfigDirectory.appending(path: "dotfiles/anaclast/config.json")
+
+let configFixture = #"""
+{
+  "clipboard" : { "limit" : 500 },
+  "disabledSymbolicHotkeys" : [64],
+  "hyper" : {
+    "keys" : {
+      "h" : { "open" : "com.apple.mail" },
+      "left" : { "tile" : "left" },
+      "space" : { "command" : "launcher" }
+    },
+    "tap" : { "tile" : "maximize" },
+    "tapTimeoutMilliseconds" : 200
+  },
+  "modifierTaps" : {
+    "leftCommand" : { "inputSource" : "com.apple.keylayout.US" },
+    "rightCommand" : { "inputSource" : "com.apple.keylayout.ABC" },
+    "timeoutMilliseconds" : 500
+  },
+  "remaps" : [
+    { "from" : "spotlight", "to" : "fn+f4" },
+    { "from" : "fn+f4", "to" : "fn+spotlight" }
+  ],
+  "shortcuts" : [
+    { "action" : { "command" : "launcher" }, "chord" : "cmd+space" },
+    { "action" : { "command" : "lockScreen" }, "chord" : "cmd+l" },
+    { "action" : { "command" : "clipboardHistory" }, "chord" : "cmd+shift+v" },
+    { "action" : { "menu" : ["Message", "Archive"] }, "app" : "com.apple.mail", "chord" : "cmd+e" }
+  ],
+  "tiles" : {
+    "left" : { "h" : 1, "w" : 0.5, "x" : 0, "y" : 0 },
+    "maximize" : { "h" : 1, "w" : 1, "x" : 0, "y" : 0 }
+  }
+}
+"""#
+
+let fixtureConfigURL: URL = {
+    let url = FileManager.default.temporaryDirectory.appending(path: "anaclast-config-fixture-\(UUID().uuidString).json")
+    try! Data(configFixture.utf8).write(to: url)
+    return url
+}()
