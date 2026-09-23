@@ -9,4 +9,4 @@ A remapper that exclusively seizes the keyboard and then loses its output path d
 
 **Why:** the owner cannot type a password to recover a bricked keyboard.
 
-**How to apply:** Anaclast never seizes HID devices. It uses a session CGEventTap, which the system disables on timeout and which passes events through when Anaclast is gone, plus a `UserKeyMapping` Caps Lock remap that Anaclast clears when it quits. Never uninstall the Karabiner-Elements cask as a side effect: its uninstall script removes the shared DriverKit VirtualHIDDevice files. Retiring Karabiner is an owner-approved step of its own.
+**How to apply:** Anaclast never seizes HID devices. It uses a session CGEventTap, which the system disables on timeout and which passes events through when Anaclast is gone, plus a `UserKeyMapping` Caps Lock remap that Anaclast clears when it quits. Never uninstall the Karabiner-Elements cask as a side effect: its uninstall script removes the shared DriverKit VirtualHIDDevice files. Retiring Karabiner is an owner-approved step of its own. The owner approved it on 2026-09-23, and Karabiner-Elements and Hammerspoon left the machine config that day.
