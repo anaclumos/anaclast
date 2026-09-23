@@ -18,6 +18,7 @@ final class ActionRunner {
         case .keystroke(let chord): KeySender.post(chord)
         case .menu(let path): MenuInvoker.invoke(path)
         case .command(let command): run(command)
+        case .window(let target): AppLauncher.focusOrLaunch(target)
         }
     }
 
@@ -29,8 +30,6 @@ final class ActionRunner {
         case .missionControl: SystemActions.missionControl()
         case .toggleCapsLock: SystemActions.toggleCapsLock()
         case .openDefaultBrowser: AppLauncher.openDefaultBrowser()
-        case .cursorAgents: AppLauncher.openCursor(agents: true)
-        case .cursorIDE: AppLauncher.openCursor(agents: false)
         case .launcher, .openSettings, .clipboardHistory, .applyMachineConfig, .reloadConfig, .quit: onCommand(command)
         }
     }

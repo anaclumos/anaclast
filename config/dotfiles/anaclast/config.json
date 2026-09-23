@@ -78,7 +78,16 @@
         "open" : "com.apple.Preview"
       },
       "quote" : {
-        "command" : "cursorIDE"
+        "window" : {
+          "app" : "com.todesktop.230313mzl4w4u92",
+          "exceptTitle" : "Cursor Agents",
+          "launch" : [
+            "Contents/Resources/app/bin/cursor",
+            "--classic",
+            "-n"
+          ],
+          "name" : "Cursor IDE"
+        }
       },
       "r" : {
         "open" : "com.linear"
@@ -90,7 +99,15 @@
         "tile" : "right"
       },
       "semicolon" : {
-        "command" : "cursorAgents"
+        "window" : {
+          "app" : "com.todesktop.230313mzl4w4u92",
+          "launch" : [
+            "Contents/Resources/app/bin/cursor",
+            "--glass"
+          ],
+          "name" : "Cursor Agents",
+          "title" : "Cursor Agents"
+        }
       },
       "space" : {
         "command" : "launcher"

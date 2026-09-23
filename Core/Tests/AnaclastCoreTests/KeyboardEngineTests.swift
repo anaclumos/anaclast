@@ -231,6 +231,30 @@ import Testing
         #expect(throws: DecodingError.self) { try JSONDecoder().decode(Action.self, from: Data(#"{"tiel": "left"}"#.utf8)) }
     }
 
+    @Test func windowActionDecodes() throws {
+        let json = #"{"window": {"name": "Notes", "app": "com.example.notes", "exceptTitle": "Settings", "launch": ["Contents/MacOS/notes", "--new"]}}"#
+        let action = try JSONDecoder().decode(Action.self, from: Data(json.utf8))
+        #expect(action == .window(WindowTarget(name: "Notes", app: "com.example.notes", exceptTitle: "Settings", launch: ["Contents/MacOS/notes", "--new"])))
+    }
+
+    @Test func windowTargetMatchesTitles() {
+        let exact = WindowTarget(name: "Inbox", app: "com.example.mail", title: "Inbox")
+        #expect(exact.matches(title: "Inbox"))
+        #expect(!exact.matches(title: "Drafts"))
+        let other = WindowTarget(name: "Editor", app: "com.example.editor", exceptTitle: "Inbox")
+        #expect(other.matches(title: "Drafts"))
+        #expect(!other.matches(title: "Inbox"))
+        #expect(!other.matches(title: ""))
+    }
+
+    @Test func windowActionNeedsAnAppAndAnExecutable() throws {
+        var config = try Config.load(from: repoConfigURL)
+        config.hyper.keys["x"] = .window(WindowTarget(name: "Empty", app: "com.example.app", launch: []))
+        #expect(throws: ConfigError.self) { try config.validate() }
+        config.hyper.keys["x"] = .window(WindowTarget(name: "Empty", app: ""))
+        #expect(throws: ConfigError.self) { try config.validate() }
+    }
+
     @Test func keystrokeParses() throws {
         let action = try JSONDecoder().decode(Action.self, from: Data(#"{"keystroke": "ctrl+m"}"#.utf8))
         #expect(action == .keystroke(KeyChord(key: KeyCode(name: "m")!, modifiers: .control)))

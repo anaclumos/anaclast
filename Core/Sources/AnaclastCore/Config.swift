@@ -20,8 +20,6 @@ public enum Command: String, CaseIterable, Sendable, Codable {
     case missionControl
     case toggleCapsLock
     case openDefaultBrowser
-    case cursorAgents
-    case cursorIDE
     case applyMachineConfig
     case reloadConfig
     case quit
@@ -34,6 +32,27 @@ public enum Action: Hashable, Sendable {
     case keystroke(KeyChord)
     case menu([String])
     case command(Command)
+    case window(WindowTarget)
+}
+
+public struct WindowTarget: Codable, Hashable, Sendable {
+    public let name: String
+    public let app: String
+    public let title: String?
+    public let exceptTitle: String?
+    public let launch: [String]?
+
+    public init(name: String, app: String, title: String? = nil, exceptTitle: String? = nil, launch: [String]? = nil) {
+        self.name = name
+        self.app = app
+        self.title = title
+        self.exceptTitle = exceptTitle
+        self.launch = launch
+    }
+
+    public func matches(title candidate: String) -> Bool {
+        !candidate.isEmpty && (title.map { candidate == $0 } ?? true) && (exceptTitle.map { candidate != $0 } ?? true)
+    }
 }
 
 struct DynamicKey: CodingKey {
@@ -55,6 +74,7 @@ extension Action: Decodable {
         case "inputSource": self = .inputSource(try container.decode(String.self, forKey: key))
         case "menu": self = .menu(try container.decode([String].self, forKey: key))
         case "command": self = .command(try container.decode(Command.self, forKey: key))
+        case "window": self = .window(try container.decode(WindowTarget.self, forKey: key))
         case "keystroke":
             let text = try container.decode(String.self, forKey: key)
             do {
@@ -78,6 +98,7 @@ extension Action: Encodable {
         case .menu(let path): try container.encode(path, forKey: DynamicKey(stringValue: "menu"))
         case .command(let command): try container.encode(command, forKey: DynamicKey(stringValue: "command"))
         case .keystroke(let chord): try container.encode(chord.configText, forKey: DynamicKey(stringValue: "keystroke"))
+        case .window(let target): try container.encode(target, forKey: DynamicKey(stringValue: "window"))
         }
     }
 }
@@ -181,15 +202,20 @@ public struct Config: Codable, Hashable, Sendable {
         for shortcut in shortcuts {
             _ = try KeyChord(parsing: shortcut.chord)
         }
-        var actions = [hyper.tap] + Array(hyper.keys.values) + shortcuts.map(\.action)
-        actions += [modifierTaps.leftCommand, modifierTaps.rightCommand].compactMap { $0 }
-        for action in actions {
+        for action in boundActions {
             if case .tile(let name) = action, name != Self.fullscreenTile, tiles[name] == nil {
                 throw .invalid("action refers to unknown tile \"\(name)\"")
             }
             if case .menu(let path) = action, path.count < 2 {
                 throw .invalid("a menu action needs at least a menu and an item")
             }
+            if case .window(let target) = action, target.name.isEmpty || target.app.isEmpty || target.launch?.isEmpty == true {
+                throw .invalid("a window action needs a name and an app, and a launch list starts with the executable")
+            }
         }
+    }
+
+    public var boundActions: [Action] {
+        [hyper.tap] + hyper.keys.sorted { $0.key < $1.key }.map(\.value) + shortcuts.map(\.action) + [modifierTaps.leftCommand, modifierTaps.rightCommand].compactMap { $0 }
     }
 }

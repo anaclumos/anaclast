@@ -35,6 +35,7 @@ An event tap reads every key. Caps Lock reaches it as F18 through the HID `UserK
 
 - Caps tap under 200 ms maximizes the window. Caps held is Hyper.
 - Hyper keys tile windows, open apps and run commands. ⌘Space and Hyper Space open the launcher (owner 2026-09-23, replacing Spotlight on ⌘Space).
+- A `window` action focuses an app's window whose title is `title` or is not `exceptTitle`, and otherwise runs `launch` from inside the app bundle. The launcher lists each one by its `name`. Hyper ; and Hyper ' use it for Cursor's Agents and IDE windows.
 - A left ⌘ tap under 500 ms selects ABC and a right ⌘ tap selects 2-Set Korean. Any key, click or other modifier during the hold cancels the tap.
 - ⌘L locks the screen and ⌘⇧V opens clipboard history. In Mail, ⌘E archives and ⌘R gets all new mail.
 - Bare F4 is F4 and fn F4 is Spotlight. F5 keeps Apple's Dictation (owner 2026-09-23). Only the physical fn key counts, so an external keyboard's F4 stays F4.

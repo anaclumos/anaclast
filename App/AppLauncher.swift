@@ -1,5 +1,6 @@
 import AppKit
 import ApplicationServices
+import AnaclastCore
 
 @MainActor
 enum AppLauncher {
@@ -24,29 +25,28 @@ enum AppLauncher {
         open(url: browser)
     }
 
-    static let cursorBundleID = "com.todesktop.230313mzl4w4u92"
-    static let cursorAgentsTitle = "Cursor Agents"
-
-    static func openCursor(agents: Bool) {
-        if focusCursorWindow(agents: agents) { return }
-        guard let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: cursorBundleID) else { return }
-        let cli = app.appending(path: "Contents/Resources/app/bin/cursor")
+    static func focusOrLaunch(_ target: WindowTarget) {
+        if focusWindow(of: target) { return }
+        guard let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: target.app) else {
+            log.notice("no app for \(target.app, privacy: .public)")
+            return
+        }
+        guard let launch = target.launch, let executable = launch.first else { return open(url: app) }
         let process = Process()
-        process.executableURL = cli
-        process.arguments = agents ? ["--glass"] : ["--classic", "-n"]
+        process.executableURL = app.appending(path: executable)
+        process.arguments = Array(launch.dropFirst())
         do {
             try process.run()
         } catch {
-            log.error("cursor cli failed: \(error.localizedDescription, privacy: .public)")
+            log.error("launch \(executable, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
-    private static func focusCursorWindow(agents: Bool) -> Bool {
-        guard let running = NSRunningApplication.runningApplications(withBundleIdentifier: cursorBundleID).first else { return false }
+    private static func focusWindow(of target: WindowTarget) -> Bool {
+        guard let running = NSRunningApplication.runningApplications(withBundleIdentifier: target.app).first else { return false }
         let element = AXUIElementCreateApplication(running.processIdentifier)
         for window in AX.children(element, kAXWindowsAttribute) {
-            guard let title = AX.string(window, kAXTitleAttribute), !title.isEmpty else { continue }
-            guard (title == cursorAgentsTitle) == agents else { continue }
+            guard let title = AX.string(window, kAXTitleAttribute), target.matches(title: title) else { continue }
             running.activate()
             AX.set(window, kAXMainAttribute, kCFBooleanTrue)
             AX.set(window, kAXFocusedAttribute, kCFBooleanTrue)

@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import AnaclastCore
 
 @MainActor
@@ -27,6 +27,12 @@ enum Catalog {
             let words = name.replacing("-", with: " ")
             let title = name == Config.fullscreenTile ? "Toggle Full Screen" : "Tile \(words.capitalized)"
             items.append(LauncherItem(id: "tile:\(name)", title: title, subtitle: "Window", keywords: [words, "window \(words)"], icon: .symbol("macwindow"), target: .action(action), hint: hints[action]))
+        }
+        var windows = Set<WindowTarget>()
+        for case .window(let target) in config.boundActions where windows.insert(target).inserted {
+            let action = Action.window(target)
+            let icon: LauncherItem.Icon = NSWorkspace.shared.urlForApplication(withBundleIdentifier: target.app).map { .file($0) } ?? .symbol("macwindow")
+            items.append(LauncherItem(id: "window:\(target.name)", title: target.name, subtitle: "", keywords: [], icon: icon, target: .action(action), hint: hints[action]))
         }
         for source in InputSources.selectable() {
             let action = Action.inputSource(source.id)
@@ -75,7 +81,7 @@ struct ActionChoice: Identifiable, Hashable, Sendable {
             case .tile: self = .tile
             case .command: self = .command
             case .inputSource: self = .inputSource
-            case .open: self = .app
+            case .open, .window: self = .app
             case .keystroke, .menu: self = .other
             }
         }
@@ -94,6 +100,7 @@ struct ActionChoice: Identifiable, Hashable, Sendable {
         case .keystroke(let chord): "Press \(chord)"
         case .menu(let path): "Menu \(path.joined(separator: " > "))"
         case .command(let command): command.title
+        case .window(let target): target.name
         }
     }
 }
@@ -110,8 +117,6 @@ extension Command {
         case .missionControl: "Mission Control"
         case .toggleCapsLock: "Toggle Caps Lock"
         case .openDefaultBrowser: "Open Default Browser"
-        case .cursorAgents: "Cursor Agents"
-        case .cursorIDE: "Cursor IDE"
         case .applyMachineConfig: "Apply Machine Config"
         case .reloadConfig: "Reload Config"
         case .quit: "Quit Anaclast"
@@ -129,8 +134,6 @@ extension Command {
         case .missionControl: "rectangle.3.group"
         case .toggleCapsLock: "capslock"
         case .openDefaultBrowser: "globe"
-        case .cursorAgents: "sparkles"
-        case .cursorIDE: "chevron.left.forwardslash.chevron.right"
         case .applyMachineConfig: "gearshape.2"
         case .reloadConfig: "arrow.clockwise"
         case .quit: "power"
