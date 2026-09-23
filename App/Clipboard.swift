@@ -225,27 +225,24 @@ final class ClipboardModel {
 
 struct ClipboardView: View {
     @Bindable var model: ClipboardModel
-    @FocusState private var searchFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 Image(systemName: "list.clipboard")
-                    .font(.system(size: 18, weight: .medium))
+                    .font(.system(size: 20, weight: .medium))
                     .foregroundStyle(.secondary)
-                TextField("Search clipboard history", text: $model.query)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 20))
-                    .focused($searchFocused)
-                    .onSubmit { model.activate() }
-                    .onKeyPress(.upArrow) { model.move(-1); return .handled }
-                    .onKeyPress(.downArrow) { model.move(1); return .handled }
-                    .onKeyPress(.escape) { model.dismiss(); return .handled }
-                    .onKeyPress(.delete, phases: .down) { press in
-                        guard press.modifiers.contains(.command) else { return .ignored }
-                        model.deleteSelected()
-                        return .handled
+                SearchField(placeholder: "Search clipboard history", text: $model.query, presentation: model.presentation) { command in
+                    switch command {
+                    case #selector(NSResponder.insertNewline(_:)): model.activate()
+                    case #selector(NSResponder.moveUp(_:)): model.move(-1)
+                    case #selector(NSResponder.moveDown(_:)): model.move(1)
+                    case #selector(NSResponder.cancelOperation(_:)): model.dismiss()
+                    case #selector(NSResponder.deleteToBeginningOfLine(_:)): model.deleteSelected()
+                    default: return false
                     }
+                    return true
+                }
             }
             .padding(.horizontal, 20)
             .frame(height: 58)
@@ -260,7 +257,6 @@ struct ClipboardView: View {
         }
         .containerShape(.rect(cornerRadius: IslandShape.bottomRadius))
         .onChange(of: model.query) { model.refresh() }
-        .onChange(of: model.presentation, initial: true) { searchFocused = true }
     }
 }
 

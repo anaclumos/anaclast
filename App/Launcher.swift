@@ -83,22 +83,23 @@ final class LauncherModel {
 struct LauncherView: View {
     @Bindable var model: LauncherModel
     let status: SystemStatus
-    @FocusState private var searchFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 18, weight: .medium))
+                    .font(.system(size: 20, weight: .medium))
                     .foregroundStyle(.secondary)
-                TextField("Search apps and commands", text: $model.query)
-                    .textFieldStyle(.plain)
-                    .font(.system(size: 20))
-                    .focused($searchFocused)
-                    .onSubmit { model.activate() }
-                    .onKeyPress(.upArrow) { model.move(-1); return .handled }
-                    .onKeyPress(.downArrow) { model.move(1); return .handled }
-                    .onKeyPress(.escape) { model.dismiss(); return .handled }
+                SearchField(placeholder: "Search apps and commands", text: $model.query, presentation: model.presentation) { command in
+                    switch command {
+                    case #selector(NSResponder.insertNewline(_:)): model.activate()
+                    case #selector(NSResponder.moveUp(_:)): model.move(-1)
+                    case #selector(NSResponder.moveDown(_:)): model.move(1)
+                    case #selector(NSResponder.cancelOperation(_:)): model.dismiss()
+                    default: return false
+                    }
+                    return true
+                }
             }
             .padding(.horizontal, 20)
             .frame(height: 58)
@@ -111,7 +112,6 @@ struct LauncherView: View {
         }
         .containerShape(.rect(cornerRadius: IslandShape.bottomRadius))
         .onChange(of: model.query) { model.refresh() }
-        .onChange(of: model.presentation, initial: true) { searchFocused = true }
     }
 }
 
