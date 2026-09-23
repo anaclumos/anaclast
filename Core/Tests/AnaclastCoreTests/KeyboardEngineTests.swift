@@ -284,6 +284,17 @@ import Testing
         #expect(hits.map(\.item) == ["TextEdit", "Sublime Text"])
     }
 
+    @Test func typosStillFindTheApp() {
+        let apps = ["Google Chrome", "Slack", "Safari", "Calendar", "Messages"]
+        #expect(Searcher().rank(apps, query: "slakc", title: { $0 }).first?.item == "Slack")
+        #expect(Searcher().rank(apps, query: "crhome", title: { $0 }).first?.item == "Google Chrome")
+    }
+
+    @Test func hangulQueriesNeedTheWordAsWritten() {
+        let hits = Searcher().rank(["각검", "사가"], query: "가", title: { $0 })
+        #expect(hits.map(\.item) == ["사가"])
+    }
+
     @Test func keywordsMatch() {
         let hits = Searcher().rank(["Tile Left"], query: "left half", title: { $0 }, keywords: { _ in ["left half"] })
         #expect(hits.count == 1)
