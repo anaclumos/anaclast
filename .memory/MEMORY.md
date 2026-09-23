@@ -19,3 +19,4 @@
 - [Testing now playing](testing-now-playing.md) — a scratch .app with remote command handlers and a silent track takes over Now Playing
 - [No Shortcuts app checks](no-shortcuts-app-checks.md) — the owner dropped verifying Siri actions through Shortcuts; use bundle metadata and the linkd log
 - [Admin steps run through sudo](admin-steps-run-through-sudo.md) — osascript admin fails TCC on /etc/pam.d; no-terminal sudo needs SUDO_ASKPASS plus DISPLAY, and -A disables Touch ID
+- [Use the owner's sudo session](use-owner-sudo-session.md) — when the owner names a pre-authenticated tmux pane, run root steps there instead of new Touch ID prompts
