@@ -24,3 +24,4 @@
 - [SwiftUI TextField clips the caret](swiftui-textfield-clips-caret.md) — a 20pt TextField is 1pt shorter than its field editor; search rows use an NSTextField representable that skips write-back during IME composition
 - [Testing the notch panels](testing-notch-panels.md) — capture panels by screen region, posted chords reach the tap, and clipboard Return needs a scratch paste target
 - [Install before schema edits](install-before-schema-edits.md) — the running app reloads the linked config on save, so ship the build that knows a new key before writing it
+- [Driver extension removal needs the owner](driver-extension-removal-needs-owner.md) — with SIP on, only the System Settings toggle removes a leftover DriverKit extension
