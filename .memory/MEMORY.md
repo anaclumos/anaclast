@@ -22,3 +22,4 @@
 - [Anaclast is hardware, config is software](anaclast-is-hardware-config-is-software.md) — the app ships to others, so owner-specific apps, keys and hosts live in config, never in code
 - [Use the owner's sudo session](use-owner-sudo-session.md) — when the owner names a pre-authenticated terminal session, run root steps there instead of new Touch ID prompts
 - [SwiftUI TextField clips the caret](swiftui-textfield-clips-caret.md) — a 20pt TextField is 1pt shorter than its field editor; search rows use an NSTextField representable that skips write-back during IME composition
+- [Testing the notch panels](testing-notch-panels.md) — capture panels by screen region, posted chords reach the tap, and clipboard Return needs a scratch paste target

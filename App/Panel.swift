@@ -5,6 +5,7 @@ import SwiftUI
 @Observable
 final class Island {
     var expanded = false
+    var revealed = false
     var notch = CGSize(width: 185, height: 32)
 }
 
@@ -41,7 +42,7 @@ struct IslandSurface<Content: View>: View {
     @ViewBuilder let content: Content
 
     var body: some View {
-        IslandFrame(progress: island.expanded ? 1 : 0, notch: island.notch, size: size, content: content)
+        IslandFrame(progress: island.expanded ? 1 : 0, notch: island.notch, size: size, content: IslandReveal(progress: island.revealed ? 1 : 0, notch: island.notch, size: size, content: content))
     }
 }
 
@@ -87,8 +88,6 @@ struct IslandFrame<Content: View>: View, Animatable {
         let full = CGSize(width: size.width + 2 * IslandShape.ear, height: size.height + notch.height)
         let collapsed = CGSize(width: notch.width + 2 * IslandShape.ear, height: notch.height)
         let shape = IslandShape(size: CGSize(width: collapsed.width + (full.width - collapsed.width) * progress, height: collapsed.height + (full.height - collapsed.height) * progress))
-        let rest = collapsed.width / full.width
-        let scale = rest + (1 - rest) * progress
         let bounds = CGSize(width: full.width + 2 * IslandShape.overshoot, height: full.height + IslandShape.overshoot)
         let solid = min(1, (notch.height + 28) / full.height)
         ZStack(alignment: .top) {
@@ -101,12 +100,30 @@ struct IslandFrame<Content: View>: View, Animatable {
                     .init(color: .black.opacity(0.45), location: 0.55),
                     .init(color: .black.opacity(0.1), location: 1),
                 ], startPoint: .top, endPoint: UnitPoint(x: 0.5, y: full.height / bounds.height)))
-            LayerScaled(size: CGSize(width: size.width, height: size.height + notch.height), scale: scale, content: content.frame(width: size.width, height: size.height).padding(.top, notch.height).blur(radius: max(0, 12 * (1 - progress))).opacity(progress).environment(\.colorScheme, .dark))
-                .frame(width: size.width, height: size.height + notch.height)
+            content
         }
         .frame(width: bounds.width, height: bounds.height, alignment: .top)
         .clipShape(shape)
         .environment(\.colorScheme, .dark)
+    }
+}
+
+// The content runs on its own spring without bounce. Scaling it through the island's overshoot moved the search row after it had settled.
+struct IslandReveal<Content: View>: View, Animatable {
+    var progress: CGFloat
+    let notch: CGSize
+    let size: CGSize
+    let content: Content
+
+    nonisolated var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    var body: some View {
+        let rest = (notch.width + 2 * IslandShape.ear) / (size.width + 2 * IslandShape.ear)
+        LayerScaled(size: CGSize(width: size.width, height: size.height + notch.height), scale: rest + (1 - rest) * progress, content: content.frame(width: size.width, height: size.height).padding(.top, notch.height).blur(radius: max(0, 12 * (1 - progress))).opacity(progress).environment(\.colorScheme, .dark))
+            .frame(width: size.width, height: size.height + notch.height)
     }
 }
 
@@ -160,11 +177,13 @@ final class FloatingPanel: NSPanel {
         onShow()
         makeKeyAndOrderFront(nil)
         withAnimation(.spring(duration: 0.5, bounce: 0.35)) { island.expanded = true }
+        withAnimation(.spring(duration: 0.5)) { island.revealed = true }
     }
 
     func hide(then finished: @escaping () -> Void = {}) {
         guard isVisible, island.expanded else { return finished() }
         onHide()
+        withAnimation(.spring(duration: 0.35)) { island.revealed = false }
         withAnimation(.spring(duration: 0.35, bounce: 0.2)) {
             island.expanded = false
         } completion: { [weak self] in
