@@ -247,7 +247,6 @@ func loadError(_ json: String) -> String? {
         for link in config.links {
             #expect(FileManager.default.fileExists(atPath: directory.appending(path: link.source).path(percentEncoded: false)), "missing \(link.source)")
         }
-        #expect((config.homebrew.casks + config.homebrew.keep.casks).contains("karabiner-elements"))
     }
 
     @Test func unknownHostWithoutDefaultGetsNothingExtra() throws {

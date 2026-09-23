@@ -79,10 +79,7 @@
     },
     "keep": {
       "brews": [],
-      "casks": [
-        "hammerspoon",
-        "karabiner-elements"
-      ]
+      "casks": []
     },
     "cleanup": true
   },

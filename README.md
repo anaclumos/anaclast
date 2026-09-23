@@ -72,7 +72,6 @@ An event tap reads every key. Caps Lock reaches it as F18 through the HID `UserK
 | Administrator | `sudo_local`, Remote Login, host names and App Store removals run as one `sudo` call. It asks for Touch ID first, then for the password in the terminal, or in a dialog when the window runs apply. Writing `sudo_local` needs Full Disk Access for the terminal or app that runs apply, and happens only when every PAM module it names exists |
 
 - Destructive steps are marked in the plan and wait for a y/N answer, `--yes` or the window's confirmation. Anything replaced goes to the Trash.
-- `karabiner-elements` and `hammerspoon` stay in `keep.casks` until the cutover is done.
 
 ## Layout
 
