@@ -164,15 +164,16 @@ import Testing
         #expect(engine.handle(up("f4", .maskSecondaryFn, at: 0.05), frontmostApp: nil) == .pass)
     }
 
-    @Test func bareDictationKeyBecomesControlMAndKeepsShift() throws {
+    @Test func bareSpotlightKeyKeepsShift() throws {
         var engine = try engine()
-        #expect(engine.handle(down("dictation", [.maskSecondaryFn, .maskShift], at: 0), frontmostApp: nil) == rewritten("m", [.maskControl, .maskShift]))
+        #expect(engine.handle(down("spotlight", [.maskSecondaryFn, .maskShift], at: 0), frontmostApp: nil) == rewritten("f4", [.maskSecondaryFn, .maskShift]))
     }
 
-    @Test func physicalFnWithF5BecomesDictation() throws {
+    @Test func dictationKeyPasses() throws {
         var engine = try engine()
-        _ = engine.handle(function(down: true, at: 0), frontmostApp: nil)
-        #expect(engine.handle(down("f5", .maskSecondaryFn, at: 0.05), frontmostApp: nil) == rewritten("dictation", .maskSecondaryFn))
+        #expect(engine.handle(down("dictation", .maskSecondaryFn, at: 0), frontmostApp: nil) == .pass)
+        _ = engine.handle(function(down: true, at: 0.1), frontmostApp: nil)
+        #expect(engine.handle(down("f5", .maskSecondaryFn, at: 0.15), frontmostApp: nil) == .pass)
     }
 
     @Test func missedReleaseDoesNotEatTheNextPress() throws {
@@ -241,8 +242,7 @@ import Testing
 
     @Test func remapSourceMayOnlyRequireFn() throws {
         var config = try Config.load(from: repoConfigURL)
-        let index = try #require(config.remaps.firstIndex { $0.from == "fn+f5" })
-        config.remaps[index] = Remap(from: "cmd+f5", to: config.remaps[index].to)
+        config.remaps.append(Remap(from: "cmd+f5", to: "fn+dictation"))
         #expect(throws: ConfigError.invalid(#"remap "cmd+f5" may only require fn"#)) { try config.validate() }
     }
 }

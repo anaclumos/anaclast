@@ -130,14 +130,6 @@
     {
       "from" : "fn+f4",
       "to" : "fn+spotlight"
-    },
-    {
-      "from" : "dictation",
-      "to" : "ctrl+m"
-    },
-    {
-      "from" : "fn+f5",
-      "to" : "fn+dictation"
     }
   ],
   "shortcuts" : [
