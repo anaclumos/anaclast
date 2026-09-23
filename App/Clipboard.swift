@@ -257,19 +257,6 @@ struct ClipboardView: View {
                 ClipboardPreview(entry: model.selected, history: model.history)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            Divider()
-            HStack(spacing: 8) {
-                Text("\(model.history.entries.count) items")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                Spacer()
-                Text("Delete").font(.system(size: 12)).foregroundStyle(.secondary)
-                KeyCap(text: "⌘⌫")
-                Text("Paste").font(.system(size: 12)).foregroundStyle(.secondary)
-                KeyCap(text: "↵")
-            }
-            .padding(.horizontal, 16)
-            .frame(height: 38)
         }
         .containerShape(.rect(cornerRadius: IslandShape.bottomRadius))
         .onChange(of: model.query) { model.refresh() }

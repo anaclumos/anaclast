@@ -108,17 +108,10 @@ struct LauncherView: View {
             } else {
                 ResultList(model: model)
             }
-            Divider()
-            FooterBar(label: model.selected.map(actionLabel) ?? "")
         }
         .containerShape(.rect(cornerRadius: IslandShape.bottomRadius))
         .onChange(of: model.query) { model.refresh() }
         .onChange(of: model.presentation, initial: true) { searchFocused = true }
-    }
-
-    private func actionLabel(_ item: LauncherItem) -> String {
-        if case .app = item.target { return "Open Application" }
-        return "Run Command"
     }
 }
 
@@ -215,38 +208,5 @@ struct ItemIcon: View {
                 .frame(width: 26, height: 26)
                 .background(.quaternary, in: .rect(cornerRadius: 6))
         }
-    }
-}
-
-struct FooterBar: View {
-    let label: String
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Text("Anaclast")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(.secondary)
-            Spacer()
-            if !label.isEmpty {
-                Text(label)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-                KeyCap(text: "↵")
-            }
-        }
-        .padding(.horizontal, 16)
-        .frame(height: 38)
-    }
-}
-
-struct KeyCap: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
-            .font(.system(size: 11, weight: .semibold))
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(.quaternary, in: .rect(cornerRadius: 4))
     }
 }
