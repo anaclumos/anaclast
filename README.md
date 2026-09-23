@@ -43,7 +43,8 @@ An event tap reads every key. Caps Lock reaches it as F18 through the HID `UserK
 - An empty query shows tiles for the clock, weather, battery, Mail, now playing, calendar, network, CPU and memory. The first keystroke switches to app results.
 - The first open asks for Calendar access, then Location, which the weather and the Wi-Fi name need.
 - Mail's unread count is read only while Mail runs. The first read asks for Automation access to Mail.
-- Now playing runs the `media-control` brew, a Perl bridge to MediaRemote.
+- Now playing runs the `media-control` brew, a Perl bridge to MediaRemote, as one long-lived stream.
+- While media plays, the notch shows the artwork on its left and a soundwave on its right. The island hides while a panel is open, on pause, and on screens without a notch.
 
 ## Settings
 
